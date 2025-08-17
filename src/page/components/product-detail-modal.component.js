@@ -1,41 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartShopping,
-  faHeart,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
+import { Modal } from "../../components/modal.component";
 import { Rating } from "../components/rating.component";
 import styled from "styled-components";
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-`;
-
-const ModalContent = styled.div`
-  width: 100%;
-  max-width: 50rem;
-  background-color: white;
-  border-radius: 1.25rem;
-  padding: 2rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  border: 1px solid #e5e7eb;
-  transform: scale(0.95);
-  opacity: 0;
-  animation: modalIn 0.25s forwards ease-out;
-  @keyframes modalIn {
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-`;
+import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
+import { Space } from "../../components/space.component";
+import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
+import { WishListButton } from "./wish-list-button.component";
+import PropTypes from "prop-types";
 
 const ModalHeader = styled.div`
   display: flex;
@@ -44,14 +17,8 @@ const ModalHeader = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 1.125rem;
+  font-size: 1.5rem;
   font-weight: 600;
-`;
-
-const CloseButton = styled.button`
-  border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem;
 `;
 
 const ModalBody = styled.div`
@@ -67,7 +34,7 @@ const ModalBody = styled.div`
 
 const ImageWrapper = styled.div`
   border-radius: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid ${COLORS.LIGHT_GRAY};
   overflow: hidden;
 `;
 
@@ -78,7 +45,7 @@ const Price = styled.div`
 
 const Description = styled.p`
   margin-top: 0.75rem;
-  color: #4b5563;
+  color: ${COLORS.SLATE_GRAY};
   font-size: 0.875rem;
   line-height: 1.5;
 `;
@@ -95,31 +62,16 @@ const AddCartButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   border-radius: 1rem;
-  background-color: #111827;
+  background-color: ${COLORS.CHARCOAL_BLUE};
   color: white;
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  &:hover {
-    background-color: #1f2937;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-  }
-`;
 
-const WishlistButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 1rem;
-  padding: 0.5rem 1.25rem;
-  border: 1px solid ${({ wished }) => (wished ? "#111827" : "#e5e7eb")};
-  background-color: ${({ wished }) => (wished ? "#fef3c7" : "white")};
-  transition: all 0.3s ease;
   &:hover {
-    background-color: ${({ wished }) => (wished ? "#fde68a" : "#f3f4f6")};
+    background-color: ${COLORS.DARK_GRAY};
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 15px ${COLORS.BLACK_10};
   }
 `;
 
@@ -137,68 +89,79 @@ const ProductImage = styled.img`
   object-fit: cover;
   border-radius: 0.75rem;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+
   ${CardButton}:hover & {
     transform: scale(1.1);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 25px ${COLORS.BLACK_10};
   }
 `;
 
-const ProductInfo = styled.div`
-  padding: 1rem;
-`;
-
 export const ProductDetailModal = ({
-  product,
-  onClose,
-  onAddCart,
-  onToggleWish,
-  wished,
+  productDetail,
+  isWishedProduct,
+  onCloseProductDetailModal,
+  onAddProductToCart,
+  onToggleWishList,
 }) => {
-  if (!product) return null;
-
   return (
-    <ModalOverlay>
-      <ModalContent>
-        <ModalHeader>
-          <Title>{product.title}</Title>
+    <Modal
+      open={productDetail}
+      onCancel={onCloseProductDetailModal}
+      footer={null}
+      centered
+      width={800}
+      zIndex={2000}
+    >
+      {productDetail && (
+        <>
+          <ModalHeader>
+            <Title>{productDetail.title}</Title>
+          </ModalHeader>
 
-          <CloseButton onClick={onClose}>
-            <FontAwesomeIcon icon={faXmark} className="h-4 w-4" />
-          </CloseButton>
-        </ModalHeader>
+          <ModalBody>
+            <ImageWrapper>
+              <ProductImage
+                src={productDetail.image}
+                alt={productDetail.title}
+              />
+            </ImageWrapper>
 
-        <ModalBody>
-          <ImageWrapper>
-            <ProductImage src={product.image} alt={product.title} />
-          </ImageWrapper>
+            <Space direction="vertical" size="large">
+              <Price>
+                {FormatVietnameseCurrency(productDetail.price)}{" "}
+                {VIETNAMESE_CURRENCY}
+              </Price>
 
-          <ProductInfo>
-            <Price>${product.price}</Price>
+              <Rating value={productDetail.rating} />
 
-            <Rating value={product.rating} />
+              <Description>{productDetail.description}</Description>
 
-            <Description>
-              A minimal, modern product designed to fit seamlessly into your
-              daily life. Durable, lightweight, and beautifully crafted.
-            </Description>
+              <Actions>
+                <AddCartButton
+                  onClick={() => onAddProductToCart(productDetail)}
+                >
+                  <FontAwesomeIcon icon={faCartShopping} className="h-4 w-4" />
+                  Add to cart
+                </AddCartButton>
 
-            <Actions>
-              <AddCartButton onClick={() => onAddCart(product)}>
-                <FontAwesomeIcon icon={faCartShopping} className="h-4 w-4" />
-                Add to cart
-              </AddCartButton>
-              
-              <WishlistButton
-                wished={wished}
-                onClick={() => onToggleWish(product)}
-              >
-                <FontAwesomeIcon icon={faHeart} className="h-4 w-4" />
-                {wished ? "Wishlisted" : "Wishlist"}
-              </WishlistButton>
-            </Actions>
-          </ProductInfo>
-        </ModalBody>
-      </ModalContent>
-    </ModalOverlay>
+                <WishListButton
+                  isWishedProduct={isWishedProduct}
+                  productDetail={productDetail}
+                  onToggleWishList={onToggleWishList}
+                />
+              </Actions>
+            </Space>
+          </ModalBody>
+        </>
+      )}
+    </Modal>
   );
+};
+
+ProductDetailModal.propTypes = {
+  productDetail: PropTypes.object.isRequired,
+  isWishedProduct: PropTypes.func.isRequired,
+  onCloseProductDetailModal: PropTypes.func.isRequired,
+  onAddProductToCart: PropTypes.func.isRequired,
+  onToggleWishList: PropTypes.func.isRequired,
 };

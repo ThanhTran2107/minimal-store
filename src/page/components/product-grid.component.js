@@ -1,5 +1,8 @@
+import { isEmpty, map } from "lodash";
+import { COLORS } from "../../utilities/constant";
 import { ProductCard } from "./product-card.component";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const GridWrapper = styled.div`
   display: grid;
@@ -16,17 +19,26 @@ const GridWrapper = styled.div`
 `;
 
 const EmptyMessage = styled.div`
-  color: #6b7280;
+  color: ${COLORS.SLATE_GRAY};
 `;
 
-export const ProductGrid = ({ items, onOpen }) => {
-  if (!items.length) return <EmptyMessage>No products found.</EmptyMessage>;
-
-  return (
+export const ProductGrid = ({ filteredProducts, onOpenProductDetailModal }) => {
+  return isEmpty(filteredProducts) ? (
+    <EmptyMessage>No products found.</EmptyMessage>
+  ) : (
     <GridWrapper>
-      {items.map((p) => (
-        <ProductCard key={p.id} p={p} onOpen={onOpen} />
+      {map(filteredProducts, (product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onOpenProductDetailModal={onOpenProductDetailModal}
+        />
       ))}
     </GridWrapper>
   );
+};
+
+ProductGrid.propTypes = {
+  filteredProducts: PropTypes.object.isRequired,
+  onOpenProductDetailModal: PropTypes.func.isRequired,
 };

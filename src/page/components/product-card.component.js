@@ -1,3 +1,6 @@
+import PropTypes from "prop-types";
+import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
+import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
 import { Rating } from "./rating.component";
 import styled from "styled-components";
 
@@ -15,20 +18,22 @@ const ProductImage = styled.img`
   object-fit: cover;
   border-radius: 0.75rem;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+
   ${CardButton}:hover & {
     transform: scale(1.1);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 25px ${COLORS.BLACK_10};
   }
 `;
 
 const CardWrapper = styled.div`
   overflow: hidden;
   border-radius: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid ${COLORS.LIGHT_GRAY};
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px ${COLORS.BLACK_10};
   }
 `;
 
@@ -40,7 +45,7 @@ const TitlePrice = styled.div`
 `;
 
 const BrandRating = styled.div`
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -48,7 +53,7 @@ const BrandRating = styled.div`
 
 const Brand = styled.div`
   font-size: 0.75rem;
-  color: #6b7280;
+  color: ${COLORS.SLATE_GRAY};
 `;
 
 const Info = styled.div`
@@ -57,8 +62,10 @@ const Info = styled.div`
 
 const ImageWrapper = styled.div`
   border-radius: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid ${COLORS.VERY_LIGHT_GRAY};
   overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1 / 1;
 `;
 
 const Title = styled.div`
@@ -67,30 +74,39 @@ const Title = styled.div`
 `;
 
 const Price = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
+  margin-top: 1rem;
 `;
 
-export const ProductCard = ({ p, onOpen }) => {
+export const ProductCard = ({ product, onOpenProductDetailModal }) => {
   return (
-    <CardButton onClick={() => onOpen(p)}>
+    <CardButton onClick={() => onOpenProductDetailModal(product)}>
       <CardWrapper>
         <ImageWrapper>
-          <ProductImage src={p.image} alt={p.title} />
+          <ProductImage src={product.image} alt={product.title} />
         </ImageWrapper>
 
         <Info>
           <TitlePrice>
-            <Title>{p.title}</Title>
-            <Price>${p.price}</Price>
+            <Title>{product.title}</Title>
           </TitlePrice>
 
           <BrandRating>
-            <Brand>{p.brand}</Brand>
-            <Rating value={p.rating} />
+            <Brand>{product.brand}</Brand>
+            <Rating value={product.rating} />
           </BrandRating>
+
+          <Price>
+            {FormatVietnameseCurrency(product.price)} {VIETNAMESE_CURRENCY}
+          </Price>
         </Info>
       </CardWrapper>
     </CardButton>
   );
+};
+
+ProductCard.propTypes = {
+  product: PropTypes.object.isRequired,
+  onOpenProductDetailModal: PropTypes.func.isRequired,
 };

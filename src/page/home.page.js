@@ -1,119 +1,245 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
 
-import { PRODUCTS, TOKENS } from "../utilities/constants";
+import {
+  FILTER_PRODUCT_PRICES,
+  PRODUCTS,
+  LOCAL_STORAGE_KEYS,
+} from "../utilities/constant";
 import { Header } from "../page/components/header.component.js";
 import { FilterBar } from "../page/components/filter-bar.component";
 import { ProductGrid } from "../page/components/product-grid.component";
 import { Footer } from "../page/components/footer.component";
 import { ProductDetailModal } from "../page/components/product-detail-modal.component";
 import { CartDrawer } from "../page/components/cart-drawer.component";
-import { WishlistPanel } from "../page/components/wish-list-panel.component";
+import { WishListModal } from "./components/wish-list-modal.component.js";
+import { COLORS } from "../utilities/constant.js";
+import { filter, find, map, some } from "lodash";
+import { BannerCarousel } from "./components/banner-carousel.component.js";
+import {
+  setLocalStorage,
+  getLocalStorage,
+} from "../utilities/services/common.js";
+import { notification } from "antd";
+
+const Wrapper = styled.div`
+  background: ${COLORS.WHITE};
+  color: ${COLORS.BLACK};
+  min-height: 100vh;
+`;
+
+const Main = styled.main`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1450px;
+  padding: 0 1rem;
+`;
+
+const TopBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1.5rem 0;
+`;
+
+const SortButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: ${COLORS.DARK_GRAY_BLUE};
+  background: transparent;
+  border: none;
+  cursor: pointer;
+`;
+
+const Content = styled.div`
+  display: block;
+
+  @media (min-width: 768px) {
+    display: flex;
+    gap: 10rem;
+  }
+`;
+
+const ProductSection = styled.section`
+  flex: 1;
+`;
+
+const { MAX } = FILTER_PRODUCT_PRICES;
+const { CART_ITEMS, WISH_LIST } = LOCAL_STORAGE_KEYS;
 
 export const HomePage = () => {
-  const [query, setQuery] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [category, setCategory] = useState("All");
   const [brand, setBrand] = useState("All");
-  const [price, setPrice] = useState(200);
+  const [filterPrice, setFilterPrice] = useState(MAX);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [detail, setDetail] = useState(null);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [wishOpen, setWishOpen] = useState(false);
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const [productDetail, setProductDetail] = useState(null);
+  const [hasOpenCart, setHasOpenCart] = useState(false);
+  const [hasOpenWishList, setHasOpenWishList] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  const [cartItems, setCartItems] = useState(() => {
+    const currentCartItems = getLocalStorage("cartItems");
 
-  const filtered = useMemo(() => {
-    return PRODUCTS.filter(
-      (p) =>
-        (category === "All" || p.category === category) &&
-        (brand === "All" || p.brand === brand) &&
-        p.price <= price &&
-        p.title.toLowerCase().includes(query.toLowerCase())
+    return currentCartItems || [];
+  });
+
+  const [wishList, setWishList] = useState(() => {
+    const currentWishList = getLocalStorage("wishList");
+
+    return currentWishList || [];
+  });
+
+  const filteredProducts = useMemo(() => {
+    return filter(
+      PRODUCTS,
+      (product) =>
+        (category === "All" || product.category === category) &&
+        (brand === "All" || product.brand === brand) &&
+        product.price <= filterPrice &&
+        product.title.toLowerCase().includes(searchText.toLowerCase())
     );
-  }, [category, brand, price, query]);
+  }, [category, brand, filterPrice, searchText]);
 
-  const addToCart = (p) => {
-    setCart((prev) => {
-      const found = prev.find((it) => it.id === p.id);
+  const handleAddProductToCart = (product) => {
+    setCartItems((prev) => {
+      const found = find(prev, (cartItem) => cartItem.id === product.id);
+
+      api.success({
+        message: "Add to your cart successfully!",
+      });
+
       if (found)
-        return prev.map((it) =>
-          it.id === p.id ? { ...it, qty: it.qty + 1 } : it
+        return map(prev, (cartItem) =>
+          cartItem.id === product.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
         );
-      return [...prev, { ...p, qty: 1 }];
+
+      return [...prev, { ...product, quantity: 1 }];
     });
-    setCartOpen(true);
   };
 
-  const toggleWish = (p) => {
-    setWishlist((prev) =>
-      prev.find((it) => it.id === p.id)
-        ? prev.filter((it) => it.id !== p.id)
-        : [...prev, p]
+  const handleToggleWishList = (product) => {
+    api.success({
+      message: "Add to your wish list successfully!",
+    });
+
+    setWishList((prev) =>
+      find(prev, (wishItem) => wishItem.id === product.id)
+        ? filter(prev, (wishItem) => wishItem.id !== product.id)
+        : [...prev, product]
     );
   };
-  const wished = (p) => wishlist.some((it) => it.id === p?.id);
+
+  const isWishedProduct = (product) =>
+    some(wishList, (wishItem) => wishItem.id === product?.id);
+
+  const handleRemoveWishItem = (currentId) =>
+    setWishList((prev) =>
+      filter(prev, (wishItem) => wishItem.id !== currentId)
+    );
+
+  const handleRemoveCartItem = (currentId) =>
+    setCartItems((prev) => filter(prev, (item) => item.id !== currentId));
+
+  const handleUpdateQuantity = (currentId, quantityIncrement) =>
+    setCartItems((prev) =>
+      map(prev, (item) =>
+        item.id === currentId
+          ? {
+              ...item,
+              quantity: Math.max(1, item.quantity + quantityIncrement),
+            }
+          : item
+      )
+    );
+
+  useEffect(() => {
+    setLocalStorage(CART_ITEMS, cartItems);
+    setLocalStorage(WISH_LIST, wishList);
+  }, [cartItems, wishList]);
 
   return (
-    <div className={`${TOKENS.bg} ${TOKENS.text} min-h-screen`}>
+    <Wrapper>
+      {contextHolder}
+
       <Header
-        onOpenCart={() => setCartOpen(true)}
-        onOpenWishlist={() => setWishOpen(true)}
-        query={query}
-        setQuery={setQuery}
+        searchText={searchText}
+        cartCount={cartItems.length}
+        wishCount={wishList.length}
+        onOpenCart={() => setHasOpenCart(true)}
+        onOpenWishlist={() => setHasOpenWishList(true)}
+        setSearchText={setSearchText}
       />
 
-      <main className="mx-auto max-w-6xl px-4">
-        <div className="flex items-center justify-between py-4">
-          <h1 className="text-xl font-semibold">Shop</h1>
-          <button className="inline-flex items-center gap-1 text-sm text-slate-600">
-            Newest <FontAwesomeIcon icon={faChevronRight} className="h-4 w-4" />
-          </button>
-        </div>
+      <BannerCarousel />
 
-        <div className="md:flex md:gap-8">
+      <Main>
+        <TopBar>
+          <SortButton>
+            Newest
+            <FontAwesomeIcon
+              icon={faChevronRight}
+              style={{ width: "1rem", height: "1rem" }}
+            />
+          </SortButton>
+        </TopBar>
+
+        <Content>
           <FilterBar
             category={category}
-            setCategory={setCategory}
             brand={brand}
-            setBrand={setBrand}
-            price={price}
-            setPrice={setPrice}
+            filterPrice={filterPrice}
             mobileOpen={mobileOpen}
+            setCategory={setCategory}
+            setBrand={setBrand}
+            setFilterPrice={setFilterPrice}
             setMobileOpen={setMobileOpen}
           />
 
-          <section className="flex-1">
-            <ProductGrid items={filtered} onOpen={setDetail} />
-          </section>
-        </div>
-      </main>
-
-      <Footer />
+          <ProductSection>
+            <ProductGrid
+              filteredProducts={filteredProducts}
+              onOpenProductDetailModal={setProductDetail}
+            />
+          </ProductSection>
+        </Content>
+      </Main>
 
       <ProductDetailModal
-        product={detail}
-        onClose={() => setDetail(null)}
-        onAddCart={addToCart}
-        onToggleWish={toggleWish}
-        wished={wished(detail)}
+        productDetail={productDetail}
+        isWishedProduct={isWishedProduct}
+        onCloseProductDetailModal={() => setProductDetail(null)}
+        onAddProductToCart={handleAddProductToCart}
+        onToggleWishList={handleToggleWishList}
       />
 
       <CartDrawer
-        open={cartOpen}
-        onClose={() => setCartOpen(false)}
-        items={cart}
-        setItems={setCart}
+        cartItems={cartItems}
+        hasOpenCartDrawer={hasOpenCart}
+        isWishedProduct={isWishedProduct}
+        onCloseCartDrawer={() => setHasOpenCart(false)}
+        onToggleWishList={handleToggleWishList}
+        onOpenProductDetailModal={setProductDetail}
+        onRemoveCartItem={handleRemoveCartItem}
+        onUpdateQuantity={handleUpdateQuantity}
       />
 
-      <WishlistPanel
-        open={wishOpen}
-        onClose={() => setWishOpen(false)}
-        items={wishlist}
-        onRemove={(id) =>
-          setWishlist((prev) => prev.filter((it) => it.id !== id))
-        }
+      <WishListModal
+        wishItems={wishList}
+        hasOpenWishList={hasOpenWishList}
+        onOpenProductDetailModal={setProductDetail}
+        onCloseWishListModal={() => setHasOpenWishList(false)}
+        onRemoveWishItem={handleRemoveWishItem}
       />
-    </div>
+
+      <Footer />
+    </Wrapper>
   );
 };
