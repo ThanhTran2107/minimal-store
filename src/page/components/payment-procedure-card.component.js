@@ -5,8 +5,16 @@ import { Button } from "../../components/button.component";
 import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
 import { WishListButton } from "./wish-list-button.component";
 import { isEmpty, map } from "lodash";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
+import {
+  COLORS,
+  DURATION_NOTIFICATION,
+  VIETNAMESE_CURRENCY,
+} from "../../utilities/constant";
 import PropTypes from "prop-types";
+import { Divider } from "../../components/divider.component";
+import { Input } from "../../components/input.component";
+import { AddressSelector } from "./andress-selector.component";
+import { notification } from "../../components/notification.component";
 
 const PaymentProcedureWrapper = styled.div`
   display: flex;
@@ -108,6 +116,25 @@ const CheckoutButton = styled.button`
   }
 `;
 
+const ReturnToCartButton = styled(CheckoutButton)`
+  margin-top: 0.75rem;
+  width: 100%;
+  height: 3rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  background-color: ${COLORS.BRIGHT_BLUE};
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px ${COLORS.BLACK_10};
+  }
+`;
+
 const RemoveItemButton = styled(Button)`
   transition: all 0.3s ease;
 
@@ -117,67 +144,147 @@ const RemoveItemButton = styled(Button)`
   }
 `;
 
+const ShippingInfoCard = styled.div`
+  margin-top: 1rem;
+  border: 1px solid ${COLORS.LIGHT_GRAY};
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: ${COLORS.VERY_LIGHT_GRAY};
+`;
+
+const Field = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const PaymentProcedureCard = ({
   cartItems,
   isWishedProduct,
+  hasShowShippingForm,
+  onHideShippingForm,
+  onShowShippingForm,
   onToggleWishList,
   onOpenProductDetailModal,
   onRemoveCartItem,
   onUpdateQuantity,
+  onContinueCheckout,
+  onBackToCart,
 }) => {
+  const [api, contextHolder] = notification.useNotification();
+
   return (
     <PaymentProcedureWrapper>
-      <ItemsWrapper>
-        {isEmpty(cartItems) && <EmptyText>Cart is empty.</EmptyText>}
+      {contextHolder}
 
-        {map(cartItems, (item) => (
-          <CartItem key={item.id}>
-            <ItemImage
-              src={item.image}
-              alt={item.title}
-              onClick={() => onOpenProductDetailModal(item)}
-            />
+      {!hasShowShippingForm ? (
+        <>
+          <ItemsWrapper>
+            {isEmpty(cartItems) && <EmptyText>Cart is empty.</EmptyText>}
 
-            <ItemInfo>
-              <ItemTitle>{item.title}</ItemTitle>
+            {map(cartItems, (item) => (
+              <CartItem key={item.id}>
+                <ItemImage
+                  src={item.image}
+                  alt={item.title}
+                  onClick={() => onOpenProductDetailModal(item)}
+                />
 
-              <ItemPrice>
-                {FormatVietnameseCurrency(item.price)} {VIETNAMESE_CURRENCY}
-              </ItemPrice>
+                <ItemInfo>
+                  <ItemTitle>{item.title}</ItemTitle>
 
-              <QuantityControl>
-                <Button onClick={() => onUpdateQuantity(item.id, -1)}>
-                  <FontAwesomeIcon icon={faMinus} className="h-4 w-4" />
-                </Button>
+                  <ItemPrice>
+                    {FormatVietnameseCurrency(item.price)} {VIETNAMESE_CURRENCY}
+                  </ItemPrice>
 
-                <span>{item.quantity}</span>
+                  <QuantityControl>
+                    <Button onClick={() => onUpdateQuantity(item.id, -1)}>
+                      <FontAwesomeIcon icon={faMinus} className="h-4 w-4" />
+                    </Button>
 
-                <Button onClick={() => onUpdateQuantity(item.id, +1)}>
-                  <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
-                </Button>
-              </QuantityControl>
-            </ItemInfo>
+                    <span>{item.quantity}</span>
 
-            <RemoveItemButton
-              type="default"
-              size="large"
-              danger
-              onClick={() => onRemoveCartItem(item.id)}
-              icon={<FontAwesomeIcon icon={faTrash} className="h-4 w-4" />}
-            />
+                    <Button onClick={() => onUpdateQuantity(item.id, +1)}>
+                      <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
+                    </Button>
+                  </QuantityControl>
+                </ItemInfo>
 
-            <WishListButton
-              isWishedProduct={isWishedProduct}
-              productDetail={item}
-              onToggleWishList={onToggleWishList}
-            />
-          </CartItem>
-        ))}
-      </ItemsWrapper>
+                <RemoveItemButton
+                  type="default"
+                  size="large"
+                  danger
+                  onClick={() => onRemoveCartItem(item.id)}
+                  icon={<FontAwesomeIcon icon={faTrash} className="h-4 w-4" />}
+                />
 
-      <SubtotalWrapper>
-        <CheckoutButton>Continue Check Out</CheckoutButton>
-      </SubtotalWrapper>
+                <WishListButton
+                  isWishedProduct={isWishedProduct}
+                  productDetail={item}
+                  onToggleWishList={onToggleWishList}
+                />
+              </CartItem>
+            ))}
+          </ItemsWrapper>
+
+          <SubtotalWrapper>
+            <CheckoutButton
+              onClick={() => {
+                if (isEmpty(cartItems)) {
+                  api.warning({
+                    message: "Your cart is empty to check out!",
+                    duration: DURATION_NOTIFICATION,
+                  });
+
+                  return;
+                }
+
+                onContinueCheckout();
+                onShowShippingForm(true);
+              }}
+            >
+              Continue to Checkout
+            </CheckoutButton>
+          </SubtotalWrapper>
+        </>
+      ) : (
+        <ShippingInfoCard>
+          <h3>Shipping Information</h3>
+
+          <Field>
+            <Input placeholder="Full Name" />
+          </Field>
+
+          <Field>
+            <Input placeholder="Phone Number" />
+          </Field>
+
+          <Field>
+            <Input type="email" placeholder="Email" />
+          </Field>
+
+          <Field>
+            <Input placeholder="Address" />
+          </Field>
+
+          <AddressSelector />
+
+          <Divider />
+
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <ReturnToCartButton
+              onClick={() => {
+                onBackToCart();
+                onHideShippingForm();
+              }}
+            >
+              Return
+            </ReturnToCartButton>
+
+            <CheckoutButton>Complete Order</CheckoutButton>
+          </div>
+        </ShippingInfoCard>
+      )}
     </PaymentProcedureWrapper>
   );
 };
@@ -196,4 +303,6 @@ PaymentProcedureCard.propTypes = {
   onOpenProductDetailModal: PropTypes.func.isRequired,
   onRemoveCartItem: PropTypes.func.isRequired,
   onUpdateQuantity: PropTypes.func.isRequired,
+  onContinueCheckout: PropTypes.func.isRequired,
+  onBackToCart: PropTypes.func.isRequired,
 };

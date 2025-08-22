@@ -6,11 +6,19 @@ import { Typography } from "../../components/typography.component";
 import { Row } from "../../components/row.component";
 import { Col } from "../../components/col.component";
 import { notification } from "../../components/notification.component";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
+import {
+  COLORS,
+  VIETNAMESE_CURRENCY,
+  PROMOCODE,
+  DURATION_NOTIFICATION,
+  SHIPPING_FEE,
+  SHIPPING_FEE_FREE,
+} from "../../utilities/constant";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { Space } from "../../components/space.component";
 
 const ApplyButton = styled(Button)`
   background: ${COLORS.ORANGE_YELLOW};
@@ -32,26 +40,74 @@ const CardStyled = styled(Card)`
   width: 45%;
   border-radius: 0.5rem;
   background: ${COLORS.LIGHT_GRAY};
-  height: 22rem;
+  height: auto;
 `;
 
 const { Title, Text } = Typography;
 
-export const OrderSummaryCard = ({ totalPrice }) => {
+export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [shipping, setShipping] = useState(SHIPPING_FEE);
+  const [finalTotal, setFinalTotal] = useState(0);
+  const [isPromoCodeApplied, setIsPromoCodeApplied] = useState(false);
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const applyPromoLogic = (code, price) => {
+    if (code.trim().toUpperCase() === PROMOCODE) return price * 0.5;
+
+    return 0;
+  };
 
   const handleApplyPromo = () => {
-    if (promoCode.trim().toUpperCase() === "SALE50") {
-      setDiscount(totalPrice * 0.5);
+    const discountValue = applyPromoLogic(promoCode, totalPrice);
 
-      notification.success("Promo code applied successfully!");
+    setDiscount(discountValue);
+    setIsPromoCodeApplied(discountValue > 0);
+
+    if (discountValue === 0) {
+      api.warning({
+        message: "Invalid or non-existent promo code!",
+        description:
+          totalPrice === 0 && "Cannot apply promo code on an empty cart!",
+        duration: DURATION_NOTIFICATION,
+      });
     } else {
-      setDiscount(0);
-
-      notification.warning("Invalid or non-existent promo code!");
+      api.success({
+        message: "Promo code applied successfully!",
+        duration: DURATION_NOTIFICATION,
+      });
     }
   };
+
+  useEffect(() => {
+    const discountValue = applyPromoLogic(promoCode, totalPrice);
+
+    if (isPromoCodeApplied) setDiscount(discountValue);
+
+    setShipping(totalPrice > SHIPPING_FEE_FREE ? 0 : SHIPPING_FEE);
+
+    if (totalPrice === 0) {
+      setPromoCode("");
+      setShipping(0);
+      setFinalTotal(0);
+      setDiscount(0);
+      setIsPromoCodeApplied(false);
+
+      return;
+    }
+
+    setFinalTotal(
+      totalPrice -
+        discount +
+        (totalPrice > SHIPPING_FEE_FREE
+          ? 0
+          : totalPrice === 0
+          ? 0
+          : SHIPPING_FEE)
+    );
+  }, [totalPrice, discount, promoCode, isPromoCodeApplied]);
 
   return (
     <CardStyled
@@ -61,40 +117,100 @@ export const OrderSummaryCard = ({ totalPrice }) => {
         </Title>
       }
     >
-      <Text strong>Enter promo code</Text>
+      {contextHolder}
 
-      <Row gutter={8} style={{ marginTop: "0.5rem" }}>
-        <Col flex="auto">
-          <Input
-            style={{ height: "2.5rem" }}
-            placeholder="Promo code"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-          />
-        </Col>
+      {isCheckout ? (
+        <div
+          style={{
+            maxHeight: cartItems.length >= 10 ? "300px" : "auto",
+            overflowY: cartItems.length >= 10 ? "auto" : "visible",
+            paddingRight: cartItems.length >= 10 ? "0.5rem" : 0,
+            marginBottom: "1rem",
+          }}
+        >
+          {cartItems.map((item) => (
+            <Row
+              key={item.id}
+              justify="space-between"
+              style={{ marginBottom: "0.5rem" }}
+            >
+              <Text type="success" strong>
+                {item.title} x {item.quantity}
+              </Text>
 
-        <Col>
-          <ApplyButton type="primary" onClick={handleApplyPromo}>
-            Apply
-          </ApplyButton>
-        </Col>
-      </Row>
+              <Text type="danger" strong>
+                {FormatVietnameseCurrency(item.price * item.quantity)}{" "}
+                {VIETNAMESE_CURRENCY}
+              </Text>
+            </Row>
+          ))}
+        </div>
+      ) : (
+        <>
+          <Text strong>Enter promo code</Text>
+
+          <Row gutter={8} style={{ marginTop: "0.5rem" }}>
+            <Col flex="auto">
+              <Input
+                style={{ height: "2.5rem" }}
+                placeholder="Promo code"
+                value={promoCode}
+                onChange={(e) => {
+                  if (e.target.value.trim() === "") setDiscount(0);
+
+                  setPromoCode(e.target.value);
+                }}
+              />
+            </Col>
+
+            <Col>
+              <ApplyButton type="primary" onClick={handleApplyPromo}>
+                Apply
+              </ApplyButton>
+            </Col>
+          </Row>
+        </>
+      )}
 
       <Divider />
 
-      <Row justify="space-between">
-        <Text>Subtotal</Text>
-        <Text>
-          {FormatVietnameseCurrency(totalPrice)} {VIETNAMESE_CURRENCY}
-        </Text>
-      </Row>
+      <Space
+        direction="vertical"
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <Row justify="space-between">
+          <Text strong>Subtotal</Text>
 
-      <Row justify="space-between">
-        <Text>Discount</Text>
-        <Text>
-          - {FormatVietnameseCurrency(discount)} {VIETNAMESE_CURRENCY}
-        </Text>
-      </Row>
+          <Text type="danger" strong>
+            {FormatVietnameseCurrency(totalPrice)} {VIETNAMESE_CURRENCY}
+          </Text>
+        </Row>
+
+        <Row justify="space-between">
+          <Text>Shipping</Text>
+          {totalPrice === 0 ? (
+            <Text type="danger" strong>
+              0 {VIETNAMESE_CURRENCY}
+            </Text>
+          ) : totalPrice > SHIPPING_FEE_FREE ? (
+            <Text type="danger" strong delete>
+              {FormatVietnameseCurrency(SHIPPING_FEE)} {VIETNAMESE_CURRENCY}
+            </Text>
+          ) : (
+            <Text type="danger" strong>
+              {FormatVietnameseCurrency(shipping)} {VIETNAMESE_CURRENCY}
+            </Text>
+          )}
+        </Row>
+
+        <Row justify="space-between">
+          <Text>Discount</Text>
+
+          <Text type="danger" strong>
+            - {FormatVietnameseCurrency(discount)} {VIETNAMESE_CURRENCY}
+          </Text>
+        </Row>
+      </Space>
 
       <Divider />
 
@@ -103,9 +219,8 @@ export const OrderSummaryCard = ({ totalPrice }) => {
           Total
         </Text>
 
-        <Text strong style={{ fontSize: "1.1rem" }}>
-          {FormatVietnameseCurrency(totalPrice - discount)}{" "}
-          {VIETNAMESE_CURRENCY}
+        <Text type="danger" strong style={{ fontSize: "1.1rem" }}>
+          {FormatVietnameseCurrency(finalTotal)} {VIETNAMESE_CURRENCY}
         </Text>
       </Row>
     </CardStyled>
@@ -113,5 +228,14 @@ export const OrderSummaryCard = ({ totalPrice }) => {
 };
 
 OrderSummaryCard.propTypes = {
+  cartItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      title: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      image: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   totalPrice: PropTypes.number.isRequired,
+  isCheckout: PropTypes.bool.isRequired,
 };

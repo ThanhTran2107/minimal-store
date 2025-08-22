@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { reduce } from "lodash";
 import { COLORS } from "../../utilities/constant";
@@ -6,6 +6,10 @@ import { Modal } from "../../components/modal.component";
 import PropTypes from "prop-types";
 import { OrderSummaryCard } from "./order-summary-card.component";
 import { PaymentProcedureCard } from "./payment-procedure-card.component";
+
+const CartModal = styled(Modal)`
+  margin-top: -3rem;
+`;
 
 const CartTitle = styled.p`
   background: ${COLORS.LIGHT_GRAY};
@@ -31,6 +35,9 @@ export const CartDrawer = ({
   onRemoveCartItem,
   onUpdateQuantity,
 }) => {
+  const [isCheckout, setIsCheckout] = useState(false);
+  const [hasShowShippingForm, setHasShowShippingForm] = useState(false);
+
   const priceTotal = useMemo(
     () =>
       reduce(
@@ -41,8 +48,15 @@ export const CartDrawer = ({
     [cartItems]
   );
 
+  useEffect(() => {
+    if (!hasOpenCartDrawer) {
+      setHasShowShippingForm(false);
+      setIsCheckout(false);
+    }
+  }, [hasOpenCartDrawer]);
+
   return (
-    <Modal
+    <CartModal
       title={<CartTitle>Your Cart</CartTitle>}
       open={hasOpenCartDrawer}
       onCancel={onCloseCartDrawer}
@@ -54,15 +68,25 @@ export const CartDrawer = ({
         <PaymentProcedureCard
           cartItems={cartItems}
           isWishedProduct={isWishedProduct}
+          isCheckout={isCheckout}
+          hasShowShippingForm={hasShowShippingForm}
+          onHideShippingForm={() => setHasShowShippingForm(false)}
+          onShowShippingForm={() => setHasShowShippingForm(true)}
+          onContinueCheckout={() => setIsCheckout(true)}
+          onBackToCart={() => setIsCheckout(false)}
           onToggleWishList={onToggleWishList}
           onOpenProductDetailModal={onOpenProductDetailModal}
           onRemoveCartItem={onRemoveCartItem}
           onUpdateQuantity={onUpdateQuantity}
         />
 
-        <OrderSummaryCard totalPrice={priceTotal} />
+        <OrderSummaryCard
+          cartItems={cartItems}
+          totalPrice={priceTotal}
+          isCheckout={isCheckout}
+        />
       </CartWrapper>
-    </Modal>
+    </CartModal>
   );
 };
 

@@ -1,3 +1,18 @@
+// API get locations in Vietnam
+export const PROVINCES_API = "https://provinces.open-api.vn/api/p/";
+
+export const DISTRICTS_API = (provinceCode) =>
+  `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`;
+
+export const WARDS_API = (districtCode) =>
+  `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`;
+
+export const VIETNAMESE_CURRENCY = "₫";
+export const PROMOCODE = "SALE50";
+export const DURATION_NOTIFICATION = 1;
+export const SHIPPING_FEE = 45000;
+export const SHIPPING_FEE_FREE = 7000000;
+
 // Mock data
 export const PRODUCTS = [
   {
@@ -655,5 +670,3 @@ export const LOCAL_STORAGE_KEYS = Object.freeze({
   CART_ITEMS: "cartItems",
   WISH_LIST: "wishList",
 });
-
-export const VIETNAMESE_CURRENCY = "₫";

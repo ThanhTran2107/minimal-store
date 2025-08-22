@@ -7,6 +7,7 @@ import {
   FILTER_PRODUCT_PRICES,
   PRODUCTS,
   LOCAL_STORAGE_KEYS,
+  DURATION_NOTIFICATION,
 } from "../utilities/constant";
 import { Header } from "../page/components/header.component.js";
 import { FilterBar } from "../page/components/filter-bar.component";
@@ -110,26 +111,29 @@ export const HomePage = () => {
     setCartItems((prev) => {
       const found = find(prev, (cartItem) => cartItem.id === product.id);
 
-      api.success({
-        message: "Add to your cart successfully!",
-      });
+      if (found) {
+        api.warning({
+          message: "This product is already in your cart!",
+          duration: DURATION_NOTIFICATION,
+        });
 
-      if (found)
         return map(prev, (cartItem) =>
           cartItem.id === product.id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         );
+      } else {
+        api.success({
+          message: "Add to the cart successfully!",
+          duration: DURATION_NOTIFICATION,
+        });
 
-      return [...prev, { ...product, quantity: 1 }];
+        return [...prev, { ...product, quantity: 1 }];
+      }
     });
   };
 
   const handleToggleWishList = (product) => {
-    api.success({
-      message: "Add to your wish list successfully!",
-    });
-
     setWishList((prev) =>
       find(prev, (wishItem) => wishItem.id === product.id)
         ? filter(prev, (wishItem) => wishItem.id !== product.id)

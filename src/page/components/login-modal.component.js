@@ -136,6 +136,7 @@ export const LoginModal = ({ hasOpenLoginModal, onCloseLoginModal }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <Input
           type="password"
           placeholder="Password"
@@ -172,6 +173,7 @@ export const LoginModal = ({ hasOpenLoginModal, onCloseLoginModal }) => {
             <FontAwesomeIcon style={{ color: COLORS.RED }} icon={faGoogle} />{" "}
             Google
           </SocialButton>
+          
           <SocialButton>
             <FontAwesomeIcon style={{ color: COLORS.BLUE }} icon={faFacebook} />{" "}
             Facebook

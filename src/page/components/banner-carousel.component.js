@@ -40,7 +40,7 @@ export const BannerCarousel = () => {
 
       <div>
         <CarouselContent>
-          🚚 Free nationwide shipping on orders over 1.200.000 {VIETNAMESE_CURRENCY}
+          🚚 Free nationwide shipping on orders over 7.000.000 {VIETNAMESE_CURRENCY}
         </CarouselContent>
       </div>
 
