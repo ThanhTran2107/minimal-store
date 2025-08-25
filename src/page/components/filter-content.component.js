@@ -1,10 +1,5 @@
 import styled from "styled-components";
-import {
-  CATEGORIES,
-  BRANDS,
-  COLORS,
-  VIETNAMESE_CURRENCY,
-} from "../../utilities/constant";
+import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
 import { Space } from "../../components/space.component";
 import { map } from "lodash";
 import { FILTER_PRODUCT_PRICES } from "../../utilities/constant";
@@ -62,11 +57,13 @@ const ContentWrapper = styled.div`
 const { MIN, MAX } = FILTER_PRODUCT_PRICES;
 
 export const FilterContent = ({
-  category,
-  brand,
+  categories,
+  brands,
+  categoryName,
+  brandName,
   filterPrice,
-  setCategory,
-  setBrand,
+  setCategoryName,
+  setBrandName,
   setFilterPrice,
 }) => {
   return (
@@ -77,11 +74,11 @@ export const FilterContent = ({
         <FilterTitle>Category</FilterTitle>
 
         <Space style={{ display: "flex", flexWrap: "wrap" }}>
-          {map(CATEGORIES, (item) => (
+          {map(categories, (item) => (
             <FilterButton
               key={item}
-              active={category === item}
-              onClick={() => setCategory(item)}
+              active={categoryName === item}
+              onClick={() => setCategoryName(item)}
             >
               {item}
             </FilterButton>
@@ -93,11 +90,11 @@ export const FilterContent = ({
         <FilterTitle>Brand</FilterTitle>
 
         <Space style={{ display: "flex", flexWrap: "wrap" }}>
-          {map(BRANDS, (item) => (
+          {map(brands, (item) => (
             <FilterButton
               key={item}
-              active={brand === item}
-              onClick={() => setBrand(item)}
+              active={brandName === item}
+              onClick={() => setBrandName(item)}
             >
               {item}
             </FilterButton>
@@ -125,10 +122,12 @@ export const FilterContent = ({
 };
 
 FilterContent.propTypes = {
-  category: PropTypes.string.isRequired,
-  brand: PropTypes.string.isRequired,
+  categories: PropTypes.arrayOf(PropTypes.string),
+  brands: PropTypes.arrayOf(PropTypes.string),
+  categoryName: PropTypes.string.isRequired,
+  brandName: PropTypes.string.isRequired,
   filterPrice: PropTypes.number.isRequired,
-  setCategory: PropTypes.func.isRequired,
-  setBrand: PropTypes.func.isRequired,
+  setCategoryName: PropTypes.func.isRequired,
+  setBrandName: PropTypes.func.isRequired,
   setFilterPrice: PropTypes.func.isRequired,
 };

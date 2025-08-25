@@ -17,6 +17,10 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env
+
+brstore-5ae01-firebase-adminsdk-fbsvc-0c23c5e1ce.json
+/scripts
 
 npm-debug.log*
 yarn-debug.log*

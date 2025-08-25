@@ -5,7 +5,6 @@ import styled from "styled-components";
 
 import {
   FILTER_PRODUCT_PRICES,
-  PRODUCTS,
   LOCAL_STORAGE_KEYS,
   DURATION_NOTIFICATION,
 } from "../utilities/constant";
@@ -24,6 +23,9 @@ import {
   getLocalStorage,
 } from "../utilities/services/common.js";
 import { notification } from "antd";
+import { useGetProducts } from "../utilities/data-hooks/use-get-products.hook.js";
+import { useGetCategories } from "../utilities/data-hooks/use-get-categories.hook.js";
+import { useGetBrands } from "../utilities/data-hooks/use-get-brands.hook.js";
 
 const Wrapper = styled.div`
   background: ${COLORS.WHITE};
@@ -76,8 +78,8 @@ const { CART_ITEMS, WISH_LIST } = LOCAL_STORAGE_KEYS;
 
 export const HomePage = () => {
   const [searchText, setSearchText] = useState("");
-  const [category, setCategory] = useState("All");
-  const [brand, setBrand] = useState("All");
+  const [categoryName, setCategoryName] = useState("All");
+  const [brandName, setBrandName] = useState("All");
   const [filterPrice, setFilterPrice] = useState(MAX);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productDetail, setProductDetail] = useState(null);
@@ -96,16 +98,20 @@ export const HomePage = () => {
     return currentWishList || [];
   });
 
+  const { products } = useGetProducts();
+  const { categories } = useGetCategories();
+  const { brands } = useGetBrands();
+
   const filteredProducts = useMemo(() => {
     return filter(
-      PRODUCTS,
-      (product) =>
-        (category === "All" || product.category === category) &&
-        (brand === "All" || product.brand === brand) &&
-        product.price <= filterPrice &&
-        product.title.toLowerCase().includes(searchText.toLowerCase())
+      products,
+      (pro) =>
+        (categoryName === "All" || pro.category === categoryName) &&
+        (brandName === "All" || pro.brand === brandName) &&
+        pro.price <= filterPrice &&
+        pro.title.toLowerCase().includes(searchText.toLowerCase())
     );
-  }, [category, brand, filterPrice, searchText]);
+  }, [products, categoryName, brandName, filterPrice, searchText]);
 
   const handleAddProductToCart = (product) => {
     setCartItems((prev) => {
@@ -197,12 +203,14 @@ export const HomePage = () => {
 
         <Content>
           <FilterBar
-            category={category}
-            brand={brand}
+            categories={categories}
+            brands={brands}
+            categoryName={categoryName}
+            brandName={brandName}
             filterPrice={filterPrice}
             mobileOpen={mobileOpen}
-            setCategory={setCategory}
-            setBrand={setBrand}
+            setCategoryName={setCategoryName}
+            setBrandName={setBrandName}
             setFilterPrice={setFilterPrice}
             setMobileOpen={setMobileOpen}
           />

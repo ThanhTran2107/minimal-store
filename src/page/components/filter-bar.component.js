@@ -67,22 +67,26 @@ const HeaderTitle = styled.div`
 `;
 
 export const FilterBar = ({
-  category,
-  brand,
+  categories,
+  brands,
+  categoryName,
+  brandName,
   filterPrice,
   mobileOpen,
-  setCategory,
-  setBrand,
+  setCategoryName,
+  setBrandName,
   setFilterPrice,
   setMobileOpen,
 }) => {
   const renderFilterContentComponent = () => (
     <FilterContent
-      category={category}
-      brand={brand}
+      categories={categories}
+      brands={brands}
+      category={categoryName}
+      brand={brandName}
       filterPrice={filterPrice}
-      setCategory={setCategory}
-      setBrand={setBrand}
+      setCategoryName={setCategoryName}
+      setBrandName={setBrandName}
       setFilterPrice={setFilterPrice}
     />
   );
@@ -121,12 +125,14 @@ export const FilterBar = ({
 };
 
 FilterBar.propTypes = {
-  category: PropTypes.string.isRequired,
-  brand: PropTypes.string.isRequired,
+  categories: PropTypes.arrayOf(PropTypes.string),
+  brands: PropTypes.arrayOf(PropTypes.string),
+  categoryName: PropTypes.string.isRequired,
+  brandName: PropTypes.string.isRequired,
   filterPrice: PropTypes.number.isRequired,
   mobileOpen: PropTypes.bool,
-  setCategory: PropTypes.func.isRequired,
-  setBrand: PropTypes.func.isRequired,
+  setCategoryName: PropTypes.func.isRequired,
+  setBrandName: PropTypes.func.isRequired,
   setFilterPrice: PropTypes.func.isRequired,
   setMobileOpen: PropTypes.func.isRequired,
 };

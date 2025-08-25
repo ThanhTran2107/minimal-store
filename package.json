@@ -14,6 +14,9 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.27.0",
+    "dotenv": "^17.2.1",
+    "firebase": "^12.1.0",
+    "firebase-admin": "^13.4.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",
@@ -27,7 +30,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "seed": "node --experimental-json-modules scripts/seed-products.js",
+    "seed-admin": "node --experimental-json-modules scripts/seed-products-admin.js",
+    "seed:categories": "node scripts/seed-categories.js",
+    "seed:brands": "node scripts/seed-brands.js"
   },
   "eslintConfig": {
     "extends": [
