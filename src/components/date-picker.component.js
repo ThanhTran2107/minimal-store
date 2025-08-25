@@ -1,3 +1,3 @@
-import { DatePicker } from "antd";
+import { DatePicker } from 'antd';
 
 export { DatePicker };

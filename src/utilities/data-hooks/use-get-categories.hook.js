@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { GET_CATEGORIES_API } from "../constant";
+import { useEffect, useState } from 'react';
+
+import { GET_CATEGORIES_API } from '../constant';
 
 export const useGetCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -8,20 +9,17 @@ export const useGetCategories = () => {
     try {
       const response = await fetch(GET_CATEGORIES_API);
 
-      if (!response.ok) throw new Error("Failed to fetch categories");
+      if (!response.ok) throw new Error('Failed to fetch categories');
 
       const data = await response.json();
 
       const categoryList = Object.values(data || {});
 
-      const sortedCategories = [
-        "All",
-        ...categoryList.filter((item) => item !== "All"),
-      ];
+      const sortedCategories = ['All', ...categoryList.filter(item => item !== 'All')];
 
       setCategories(sortedCategories);
     } catch (err) {
-      console.error("Error fetching categories:", err);
+      console.error('Error fetching categories:', err);
     }
   };
 

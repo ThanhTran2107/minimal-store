@@ -1,3 +1,3 @@
-import { Checkbox } from "antd";
+import { Checkbox } from 'antd';
 
 export { Checkbox };

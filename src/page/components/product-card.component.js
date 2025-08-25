@@ -1,8 +1,9 @@
-import PropTypes from "prop-types";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import { Rating } from "./rating.component";
-import styled from "styled-components";
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { COLORS, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
+import { Rating } from './rating.component';
 
 const CardButton = styled.button`
   text-align: left;
@@ -17,7 +18,9 @@ const ProductImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: 0.75rem;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 
   ${CardButton}:hover & {
     transform: scale(1.1);
@@ -29,7 +32,9 @@ const CardWrapper = styled.div`
   overflow: hidden;
   border-radius: 1rem;
   border: 1px solid ${COLORS.LIGHT_GRAY};
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-3px);

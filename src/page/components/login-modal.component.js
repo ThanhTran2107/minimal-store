@@ -1,13 +1,14 @@
-import { Modal } from "../../components/modal.component";
-import styled from "styled-components";
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle, faFacebook } from "@fortawesome/free-brands-svg-icons";
-import { Space } from "../../components/space.component";
-import { Divider } from "../../components/divider.component";
-import { Checkbox } from "../../components/checkbox.component";
-import { COLORS } from "../../utilities/constant";
-import PropTypes from "prop-types";
+import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import styled from 'styled-components';
+
+import { Checkbox } from '../../components/checkbox.component';
+import { Divider } from '../../components/divider.component';
+import { Modal } from '../../components/modal.component';
+import { Space } from '../../components/space.component';
+import { COLORS } from '../../utilities/constant';
 
 const FormWrapper = styled.div`
   display: flex;
@@ -33,11 +34,7 @@ const Input = styled.input`
 const LoginButton = styled.button`
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(
-    90deg,
-    ${COLORS.BRIGHT_YELLOW},
-    ${COLORS.ORANGE_YELLOW}
-  );
+  background: linear-gradient(90deg, ${COLORS.BRIGHT_YELLOW}, ${COLORS.ORANGE_YELLOW});
   border: none;
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -106,14 +103,14 @@ const Title = styled.h2`
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: ${COLORS.CHARCOAL_BLUE};
   margin-bottom: -1rem;
 `;
 
 export const LoginModal = ({ hasOpenLoginModal, onCloseLoginModal }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
@@ -122,66 +119,46 @@ export const LoginModal = ({ hasOpenLoginModal, onCloseLoginModal }) => {
       onCancel={onCloseLoginModal}
       footer={null}
       closeIcon={false}
-      style={{ display: "flex", justifyContent: "center" }}
+      style={{ display: 'flex', justifyContent: 'center' }}
     >
       <FormWrapper>
         <Space direction="vertical" size="small" align="center">
           <Title>WELCOME BACK</Title>
-          <p style={{ fontStyle: "italic" }}>Login to your account</p>
+          <p style={{ fontStyle: 'italic' }}>Login to your account</p>
         </Space>
 
-        <Input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <Input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} />
 
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
 
         <Actions>
-          <Checkbox
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-          >
+          <Checkbox checked={rememberMe} onChange={e => setRememberMe(e.target.checked)}>
             Remember me
           </Checkbox>
 
-          <a
-            href="#"
-            style={{ color: COLORS.ORANGE_YELLOW, fontWeight: "500" }}
-          >
+          <a href="/" style={{ color: COLORS.ORANGE_YELLOW, fontWeight: '500' }}>
             Forgot password?
           </a>
         </Actions>
 
         <LoginButton>Log in</LoginButton>
 
-        <Divider style={{ margin: "-0.5rem 0" }}>
-          <p style={{ color: COLORS.SLATE_GRAY, fontSize: "0.8rem" }}>
-            or continue with
-          </p>
+        <Divider style={{ margin: '-0.5rem 0' }}>
+          <p style={{ color: COLORS.SLATE_GRAY, fontSize: '0.8rem' }}>or continue with</p>
         </Divider>
 
         <SocialLogin>
           <SocialButton>
-            <FontAwesomeIcon style={{ color: COLORS.RED }} icon={faGoogle} />{" "}
-            Google
+            <FontAwesomeIcon style={{ color: COLORS.RED }} icon={faGoogle} /> Google
           </SocialButton>
-          
+
           <SocialButton>
-            <FontAwesomeIcon style={{ color: COLORS.BLUE }} icon={faFacebook} />{" "}
-            Facebook
+            <FontAwesomeIcon style={{ color: COLORS.BLUE }} icon={faFacebook} /> Facebook
           </SocialButton>
         </SocialLogin>
 
         <FooterText>
-          Don’t have an account? <a href="#">Sign up</a>
+          Don’t have an account? <a href="/">Sign up</a>
         </FooterText>
       </FormWrapper>
     </Modal>

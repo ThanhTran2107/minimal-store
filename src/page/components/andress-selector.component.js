@@ -1,12 +1,12 @@
-import { Select } from "../../components/select.component";
-import { useState, useEffect } from "react";
-import styled from "styled-components";
-import {
-  PROVINCES_API,
-  DISTRICTS_API,
-  WARDS_API,
-} from "../../utilities/constant";
-import { map } from "lodash";
+import { map } from 'lodash';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
+import { Select } from '../../components/select.component';
+import { DISTRICTS_API, PROVINCES_API, WARDS_API } from '../../utilities/constant';
+import { useGetDistricts } from '../../utilities/data-hooks/use-get-districts.hook';
+import { useGetProvinces } from '../../utilities/data-hooks/use-get-provices.hook';
+import { useGetWards } from '../../utilities/data-hooks/use-get-wards.hook';
 
 const Field = styled.div`
   margin-bottom: 1rem;
@@ -15,49 +15,30 @@ const Field = styled.div`
 `;
 
 export const AddressSelector = () => {
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [selectWard, setSelectedWard] = useState(null);
 
-  useEffect(() => {
-    fetch(PROVINCES_API)
-      .then((res) => res.json())
-      .then((data) => setProvinces(data))
-      .catch((e) => console.error(e));
-  }, []);
+  const { provinces } = useGetProvinces();
+  const { districts } = useGetDistricts(selectedProvince);
+  const { wards } = useGetWards(selectedDistrict);
 
-  const handleProvinceChange = (provinceCode) => {
+  const handleChangeProvice = provinceCode => {
     setSelectedProvince(provinceCode);
-    setDistricts([]);
-    setWards([]);
-
-    fetch(DISTRICTS_API(provinceCode))
-      .then((res) => res.json())
-      .then((data) => setDistricts(data.districts))
-      .catch((e) => console.error(e));
+    setSelectedDistrict(null);
+    setSelectedWard(null);
   };
 
-  const handleDistrictChange = (districtCode) => {
+  const handleChangeDistrict = districtCode => {
     setSelectedDistrict(districtCode);
-    setWards([]);
-
-    fetch(WARDS_API(districtCode))
-      .then((res) => res.json())
-      .then((data) => setWards(data.wards))
-      .catch((e) => console.error(e));
+    setSelectedWard(null);
   };
 
   return (
     <>
       <Field>
-        <Select
-          placeholder="Province / City"
-          onChange={handleProvinceChange}
-          value={selectedProvince}
-        >
-          {map(provinces, (pro) => (
+        <Select placeholder="Province / City" onChange={handleChangeProvice} value={selectedProvince}>
+          {map(provinces, pro => (
             <Select.Option key={pro.code} value={pro.code}>
               {pro.name}
             </Select.Option>
@@ -68,11 +49,11 @@ export const AddressSelector = () => {
       <Field>
         <Select
           placeholder="District"
-          onChange={handleDistrictChange}
+          onChange={handleChangeDistrict}
           value={selectedDistrict}
           disabled={!districts.length}
         >
-          {map(districts, (dist) => (
+          {map(districts, dist => (
             <Select.Option key={dist.code} value={dist.code}>
               {dist.name}
             </Select.Option>
@@ -81,8 +62,8 @@ export const AddressSelector = () => {
       </Field>
 
       <Field>
-        <Select placeholder="Ward / Commune" disabled={!wards.length}>
-          {map(wards, (ward) => (
+        <Select placeholder="Ward / Commune" disabled={!wards.length} onChange={setSelectedWard} value={selectWard}>
+          {map(wards, ward => (
             <Select.Option key={ward.code} value={ward.code}>
               {ward.name}
             </Select.Option>

@@ -34,7 +34,9 @@
     "seed": "node --experimental-json-modules scripts/seed-products.js",
     "seed-admin": "node --experimental-json-modules scripts/seed-products-admin.js",
     "seed:categories": "node scripts/seed-categories.js",
-    "seed:brands": "node scripts/seed-brands.js"
+    "seed:brands": "node scripts/seed-brands.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "eslintConfig": {
     "extends": [
@@ -54,5 +56,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "prettier": "^3.6.2"
+  }
 }

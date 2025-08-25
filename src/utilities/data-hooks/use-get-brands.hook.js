@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { GET_BRANDS_API } from "../constant";
+import { useEffect, useState } from 'react';
+
+import { GET_BRANDS_API } from '../constant';
 
 export const useGetBrands = () => {
   const [brands, setBrands] = useState([]);
@@ -8,7 +9,7 @@ export const useGetBrands = () => {
     try {
       const response = await fetch(GET_BRANDS_API);
 
-      if (!response.ok) throw new Error("Failed to fetch brands");
+      if (!response.ok) throw new Error('Failed to fetch brands');
 
       const data = await response.json();
 
@@ -16,7 +17,7 @@ export const useGetBrands = () => {
 
       setBrands(brandList);
     } catch (err) {
-      console.error("Error fetching brands:", err);
+      console.error('Error fetching brands:', err);
     }
   };
 

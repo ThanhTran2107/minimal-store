@@ -1,24 +1,25 @@
-import { Card } from "../../components/card.component";
-import { Divider } from "../../components/divider.component";
-import { Input } from "../../components/input.component";
-import { Button } from "../../components/button.component";
-import { Typography } from "../../components/typography.component";
-import { Row } from "../../components/row.component";
-import { Col } from "../../components/col.component";
-import { notification } from "../../components/notification.component";
-import { useEffect, useState } from "react";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
+import { Button } from '../../components/button.component';
+import { Card } from '../../components/card.component';
+import { Col } from '../../components/col.component';
+import { Divider } from '../../components/divider.component';
+import { Input } from '../../components/input.component';
+import { notification } from '../../components/notification.component';
+import { Row } from '../../components/row.component';
+import { Space } from '../../components/space.component';
+import { Typography } from '../../components/typography.component';
 import {
   COLORS,
-  VIETNAMESE_CURRENCY,
-  PROMOCODE,
   DURATION_NOTIFICATION,
+  PROMOCODE,
   SHIPPING_FEE,
   SHIPPING_FEE_FREE,
-} from "../../utilities/constant";
-import styled from "styled-components";
-import PropTypes from "prop-types";
-import { Space } from "../../components/space.component";
+  VIETNAMESE_CURRENCY,
+} from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
 
 const ApplyButton = styled(Button)`
   background: ${COLORS.ORANGE_YELLOW};
@@ -43,10 +44,17 @@ const CardStyled = styled(Card)`
   height: auto;
 `;
 
+const CartItemsContainer = styled.div`
+  max-height: ${({ itemCount }) => (itemCount >= 10 ? '300px' : 'auto')};
+  overflow-y: ${({ itemCount }) => (itemCount >= 10 ? 'auto' : 'visible')};
+  padding-right: ${({ itemCount }) => (itemCount >= 10 ? '0.5rem' : 0)};
+  margin-bottom: 1rem;
+`;
+
 const { Title, Text } = Typography;
 
 export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
-  const [promoCode, setPromoCode] = useState("");
+  const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [shipping, setShipping] = useState(SHIPPING_FEE);
   const [finalTotal, setFinalTotal] = useState(0);
@@ -54,11 +62,7 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
 
   const [api, contextHolder] = notification.useNotification();
 
-  const applyPromoLogic = (code, price) => {
-    if (code.trim().toUpperCase() === PROMOCODE) return price * 0.5;
-
-    return 0;
-  };
+  const applyPromoLogic = (code, price) => (code.trim().toUpperCase() === PROMOCODE ? price * 0.5 : 0);
 
   const handleApplyPromo = () => {
     const discountValue = applyPromoLogic(promoCode, totalPrice);
@@ -66,30 +70,29 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
     setDiscount(discountValue);
     setIsPromoCodeApplied(discountValue > 0);
 
-    if (discountValue === 0) {
-      api.warning({
-        message: "Invalid or non-existent promo code!",
-        description:
-          totalPrice === 0 && "Cannot apply promo code on an empty cart!",
-        duration: DURATION_NOTIFICATION,
-      });
-    } else {
-      api.success({
-        message: "Promo code applied successfully!",
-        duration: DURATION_NOTIFICATION,
-      });
-    }
+    return discountValue === 0
+      ? api.warning({
+          message: 'Invalid or non-existent promo code!',
+          description: totalPrice === 0 && 'Cannot apply promo code on an empty cart!',
+          duration: DURATION_NOTIFICATION,
+        }) && false
+      : api.success({
+          message: 'Promo code applied successfully!',
+          duration: DURATION_NOTIFICATION,
+        }) && true;
   };
 
   useEffect(() => {
     const discountValue = applyPromoLogic(promoCode, totalPrice);
 
-    if (isPromoCodeApplied) setDiscount(discountValue);
+    setDiscount(isPromoCodeApplied ? discountValue : 0);
 
     setShipping(totalPrice > SHIPPING_FEE_FREE ? 0 : SHIPPING_FEE);
 
+    setFinalTotal(totalPrice - discount + (totalPrice > SHIPPING_FEE_FREE ? 0 : totalPrice === 0 ? 0 : SHIPPING_FEE));
+
     if (totalPrice === 0) {
-      setPromoCode("");
+      setPromoCode('');
       setShipping(0);
       setFinalTotal(0);
       setDiscount(0);
@@ -97,22 +100,12 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
 
       return;
     }
-
-    setFinalTotal(
-      totalPrice -
-        discount +
-        (totalPrice > SHIPPING_FEE_FREE
-          ? 0
-          : totalPrice === 0
-          ? 0
-          : SHIPPING_FEE)
-    );
   }, [totalPrice, discount, promoCode, isPromoCodeApplied]);
 
   return (
     <CardStyled
       title={
-        <Title level={4} style={{ margin: 0, fontWeight: "600" }}>
+        <Title level={4} style={{ margin: 0, fontWeight: '600' }}>
           Order Summary
         </Title>
       }
@@ -120,43 +113,31 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
       {contextHolder}
 
       {isCheckout ? (
-        <div
-          style={{
-            maxHeight: cartItems.length >= 10 ? "300px" : "auto",
-            overflowY: cartItems.length >= 10 ? "auto" : "visible",
-            paddingRight: cartItems.length >= 10 ? "0.5rem" : 0,
-            marginBottom: "1rem",
-          }}
-        >
-          {cartItems.map((item) => (
-            <Row
-              key={item.id}
-              justify="space-between"
-              style={{ marginBottom: "0.5rem" }}
-            >
+        <CartItemsContainer>
+          {cartItems.map(item => (
+            <Row key={item.id} justify="space-between" style={{ marginBottom: '0.5rem' }}>
               <Text type="success" strong>
                 {item.title} x {item.quantity}
               </Text>
 
               <Text type="danger" strong>
-                {FormatVietnameseCurrency(item.price * item.quantity)}{" "}
-                {VIETNAMESE_CURRENCY}
+                {FormatVietnameseCurrency(item.price * item.quantity)} {VIETNAMESE_CURRENCY}
               </Text>
             </Row>
           ))}
-        </div>
+        </CartItemsContainer>
       ) : (
         <>
           <Text strong>Enter promo code</Text>
 
-          <Row gutter={8} style={{ marginTop: "0.5rem" }}>
+          <Row gutter={8} style={{ marginTop: '0.5rem' }}>
             <Col flex="auto">
               <Input
-                style={{ height: "2.5rem" }}
+                style={{ height: '2.5rem' }}
                 placeholder="Promo code"
                 value={promoCode}
-                onChange={(e) => {
-                  if (e.target.value.trim() === "") setDiscount(0);
+                onChange={e => {
+                  if (e.target.value.trim() === '') setDiscount(0);
 
                   setPromoCode(e.target.value);
                 }}
@@ -174,10 +155,7 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
 
       <Divider />
 
-      <Space
-        direction="vertical"
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
+      <Space direction="vertical" style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Row justify="space-between">
           <Text strong>Subtotal</Text>
 
@@ -215,11 +193,11 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
       <Divider />
 
       <Row justify="space-between">
-        <Text strong style={{ fontSize: "1.1rem" }}>
+        <Text strong style={{ fontSize: '1.1rem' }}>
           Total
         </Text>
 
-        <Text type="danger" strong style={{ fontSize: "1.1rem" }}>
+        <Text type="danger" strong style={{ fontSize: '1.1rem' }}>
           {FormatVietnameseCurrency(finalTotal)} {VIETNAMESE_CURRENCY}
         </Text>
       </Row>
@@ -234,7 +212,7 @@ OrderSummaryCard.propTypes = {
       title: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       image: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   totalPrice: PropTypes.number.isRequired,
   isCheckout: PropTypes.bool.isRequired,

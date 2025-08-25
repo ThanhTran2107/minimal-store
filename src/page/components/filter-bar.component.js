@@ -1,10 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-import { COLORS } from "../../utilities/constant";
-import { Button } from "../../components/button.component";
-import { FilterContent } from "./filter-content.component";
-import PropTypes from "prop-types";
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { Button } from '../../components/button.component';
+import { COLORS } from '../../utilities/constant';
+import { FilterContent } from './filter-content.component';
 
 const Aside = styled.aside`
   @media (min-width: 768px) {
@@ -82,8 +83,8 @@ export const FilterBar = ({
     <FilterContent
       categories={categories}
       brands={brands}
-      category={categoryName}
-      brand={brandName}
+      categoryName={categoryName}
+      brandName={brandName}
       filterPrice={filterPrice}
       setCategoryName={setCategoryName}
       setBrandName={setBrandName}
@@ -95,7 +96,7 @@ export const FilterBar = ({
     <Aside>
       <MobileFilterWrapper>
         <Button onClick={() => setMobileOpen(true)}>
-          <FontAwesomeIcon icon={faBars} style={{ fontSize: "1rem" }} />
+          <FontAwesomeIcon icon={faBars} style={{ fontSize: '1rem' }} />
           Filters
         </Button>
 
@@ -106,10 +107,7 @@ export const FilterBar = ({
                 <HeaderTitle>Filters</HeaderTitle>
 
                 <CloseButton onClick={() => setMobileOpen(false)}>
-                  <FontAwesomeIcon
-                    icon={faXmark}
-                    style={{ fontSize: "1rem" }}
-                  />
+                  <FontAwesomeIcon icon={faXmark} style={{ fontSize: '1rem' }} />
                 </CloseButton>
               </MobileHeader>
 

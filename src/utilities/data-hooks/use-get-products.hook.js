@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { GET_PRODUCTS_API } from "../constant";
+import { useEffect, useState } from 'react';
+
+import { GET_PRODUCTS_API } from '../constant';
 
 export const useGetProducts = () => {
   const [products, setProducts] = useState([]);
@@ -8,18 +9,18 @@ export const useGetProducts = () => {
     try {
       const response = await fetch(GET_PRODUCTS_API);
 
-      if (!response.ok) throw new Error("Failed to fetch products");
+      if (!response.ok) throw new Error('Failed to fetch products');
 
       const data = await response.json();
 
-      const productList = Object.keys(data || {}).map((key) => ({
+      const productList = Object.keys(data || {}).map(key => ({
         id: key,
         ...data[key],
       }));
 
       setProducts(productList);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error('Error fetching products:', error);
     }
   };
 

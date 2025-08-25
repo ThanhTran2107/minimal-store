@@ -1,3 +1,3 @@
-import { Typography } from "antd";
+import { Typography } from 'antd';
 
 export { Typography };

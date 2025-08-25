@@ -1,12 +1,13 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
-import { isEmpty, map } from "lodash";
-import { Button } from "../../components/button.component";
-import { Modal } from "../../components/modal.component";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import PropTypes from "prop-types";
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { isEmpty, map } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { Button } from '../../components/button.component';
+import { Modal } from '../../components/modal.component';
+import { COLORS, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
 
 const ItemsWrapper = styled.div`
   margin-top: 1rem;
@@ -27,7 +28,9 @@ const ItemImage = styled.img`
   height: 4rem;
   border-radius: 0.5rem;
   object-fit: cover;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 
   &:hover {
     transform: scale(1.1);
@@ -85,25 +88,17 @@ export const WishListModal = ({
   onRemoveWishItem,
 }) => {
   return (
-    <Modal
-      title="Wish List"
-      open={hasOpenWishList}
-      onCancel={onCloseWishListModal}
-      footer={null}
-    >
+    <Modal title="Wish List" open={hasOpenWishList} onCancel={onCloseWishListModal} footer={null}>
       <ItemsWrapper>
         {isEmpty(wishItems) && <EmptyText>No items yet.</EmptyText>}
 
-        {map(wishItems, (item) => (
+        {map(wishItems, item => (
           <WishlistItem key={item.id}>
-            <ItemImage
-              src={item.image}
-              alt={item.title}
-              onClick={() => onOpenProductDetailModal(item)}
-            />
+            <ItemImage src={item.image} alt={item.title} onClick={() => onOpenProductDetailModal(item)} />
 
             <ItemInfo>
               <ItemTitle>{item.title}</ItemTitle>
+              
               <ItemPrice>
                 {FormatVietnameseCurrency(item.price)} {VIETNAMESE_CURRENCY}
               </ItemPrice>
@@ -129,7 +124,7 @@ WishListModal.propTypes = {
       title: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       image: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   hasOpenWishList: PropTypes.bool,
   onOpenProductDetailModal: PropTypes.func.isRequired,

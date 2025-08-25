@@ -1,14 +1,14 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import { Modal } from "../../components/modal.component";
-import { Rating } from "../components/rating.component";
-import styled from "styled-components";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
-import { Space } from "../../components/space.component";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import { WishListButton } from "./wish-list-button.component";
-import PropTypes from "prop-types";
+import { Modal } from '../../components/modal.component';
+import { Space } from '../../components/space.component';
+import { COLORS, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
+import { Rating } from '../components/rating.component';
+import { WishListButton } from './wish-list-button.component';
 
 const ModalHeader = styled.div`
   display: flex;
@@ -88,7 +88,9 @@ const ProductImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: 0.75rem;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 
   ${CardButton}:hover & {
     transform: scale(1.1);
@@ -104,14 +106,7 @@ export const ProductDetailModal = ({
   onToggleWishList,
 }) => {
   return (
-    <Modal
-      open={productDetail}
-      onCancel={onCloseProductDetailModal}
-      footer={null}
-      centered
-      width={800}
-      zIndex={2000}
-    >
+    <Modal open={productDetail} onCancel={onCloseProductDetailModal} footer={null} centered width={800} zIndex={2000}>
       {productDetail && (
         <>
           <ModalHeader>
@@ -120,16 +115,12 @@ export const ProductDetailModal = ({
 
           <ModalBody>
             <ImageWrapper>
-              <ProductImage
-                src={productDetail.image}
-                alt={productDetail.title}
-              />
+              <ProductImage src={productDetail.image} alt={productDetail.title} />
             </ImageWrapper>
 
             <Space direction="vertical" size="large">
               <Price>
-                {FormatVietnameseCurrency(productDetail.price)}{" "}
-                {VIETNAMESE_CURRENCY}
+                {FormatVietnameseCurrency(productDetail.price)} {VIETNAMESE_CURRENCY}
               </Price>
 
               <Rating value={productDetail.rating} />
@@ -137,9 +128,7 @@ export const ProductDetailModal = ({
               <Description>{productDetail.description}</Description>
 
               <Actions>
-                <AddCartButton
-                  onClick={() => onAddProductToCart(productDetail)}
-                >
+                <AddCartButton onClick={() => onAddProductToCart(productDetail)}>
                   <FontAwesomeIcon icon={faCartShopping} className="h-4 w-4" />
                   Add to cart
                 </AddCartButton>

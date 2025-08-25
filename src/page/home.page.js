@@ -1,31 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { notification } from 'antd';
+import { filter, find, isEmpty, map, some } from 'lodash';
+import { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
-import {
-  FILTER_PRODUCT_PRICES,
-  LOCAL_STORAGE_KEYS,
-  DURATION_NOTIFICATION,
-} from "../utilities/constant";
-import { Header } from "../page/components/header.component.js";
-import { FilterBar } from "../page/components/filter-bar.component";
-import { ProductGrid } from "../page/components/product-grid.component";
-import { Footer } from "../page/components/footer.component";
-import { ProductDetailModal } from "../page/components/product-detail-modal.component";
-import { CartDrawer } from "../page/components/cart-drawer.component";
-import { WishListModal } from "./components/wish-list-modal.component.js";
-import { COLORS } from "../utilities/constant.js";
-import { filter, find, map, some } from "lodash";
-import { BannerCarousel } from "./components/banner-carousel.component.js";
-import {
-  setLocalStorage,
-  getLocalStorage,
-} from "../utilities/services/common.js";
-import { notification } from "antd";
-import { useGetProducts } from "../utilities/data-hooks/use-get-products.hook.js";
-import { useGetCategories } from "../utilities/data-hooks/use-get-categories.hook.js";
-import { useGetBrands } from "../utilities/data-hooks/use-get-brands.hook.js";
+import { CartDrawer } from '../page/components/cart-drawer.component';
+import { FilterBar } from '../page/components/filter-bar.component';
+import { Footer } from '../page/components/footer.component';
+import { Header } from '../page/components/header.component.js';
+import { ProductDetailModal } from '../page/components/product-detail-modal.component';
+import { ProductGrid } from '../page/components/product-grid.component';
+import { DURATION_NOTIFICATION, FILTER_PRODUCT_PRICES, LOCAL_STORAGE_KEYS } from '../utilities/constant';
+import { COLORS } from '../utilities/constant.js';
+import { useGetBrands } from '../utilities/data-hooks/use-get-brands.hook.js';
+import { useGetCategories } from '../utilities/data-hooks/use-get-categories.hook.js';
+import { useGetProducts } from '../utilities/data-hooks/use-get-products.hook.js';
+import { getLocalStorage, setLocalStorage } from '../utilities/services/common.js';
+import { BannerCarousel } from './components/banner-carousel.component.js';
+import { WishListModal } from './components/wish-list-modal.component.js';
 
 const Wrapper = styled.div`
   background: ${COLORS.WHITE};
@@ -74,105 +67,105 @@ const ProductSection = styled.section`
 `;
 
 const { MAX } = FILTER_PRODUCT_PRICES;
-const { CART_ITEMS, WISH_LIST } = LOCAL_STORAGE_KEYS;
+const { CART_ITEMS_KEY, WISH_LIST_KEY } = LOCAL_STORAGE_KEYS;
 
 export const HomePage = () => {
-  const [searchText, setSearchText] = useState("");
-  const [categoryName, setCategoryName] = useState("All");
-  const [brandName, setBrandName] = useState("All");
+  const [searchText, setSearchText] = useState('');
+  const [categoryName, setCategoryName] = useState('All');
+  const [brandName, setBrandName] = useState('All');
   const [filterPrice, setFilterPrice] = useState(MAX);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productDetail, setProductDetail] = useState(null);
   const [hasOpenCart, setHasOpenCart] = useState(false);
   const [hasOpenWishList, setHasOpenWishList] = useState(false);
   const [api, contextHolder] = notification.useNotification();
-  const [cartItems, setCartItems] = useState(() => {
-    const currentCartItems = getLocalStorage("cartItems");
-
-    return currentCartItems || [];
-  });
-
-  const [wishList, setWishList] = useState(() => {
-    const currentWishList = getLocalStorage("wishList");
-
-    return currentWishList || [];
-  });
 
   const { products } = useGetProducts();
   const { categories } = useGetCategories();
   const { brands } = useGetBrands();
 
+  const [cartItems, setCartItems] = useState(() => getLocalStorage('cartItems') || []);
+
+  const [wishList, setWishList] = useState(() => getLocalStorage('wishList') || []);
+
   const filteredProducts = useMemo(() => {
     return filter(
       products,
-      (pro) =>
-        (categoryName === "All" || pro.category === categoryName) &&
-        (brandName === "All" || pro.brand === brandName) &&
+      pro =>
+        (categoryName === 'All' || pro.category === categoryName) &&
+        (brandName === 'All' || pro.brand === brandName) &&
         pro.price <= filterPrice &&
-        pro.title.toLowerCase().includes(searchText.toLowerCase())
+        pro.title.toLowerCase().includes(searchText.toLowerCase()),
     );
   }, [products, categoryName, brandName, filterPrice, searchText]);
 
-  const handleAddProductToCart = (product) => {
-    setCartItems((prev) => {
-      const found = find(prev, (cartItem) => cartItem.id === product.id);
+  const handleAddProductToCart = product => {
+    setCartItems(prev => {
+      const found = find(prev, cartItem => cartItem.id === product.id);
 
-      if (found) {
-        api.warning({
-          message: "This product is already in your cart!",
-          duration: DURATION_NOTIFICATION,
-        });
+      (found
+        ? () =>
+            api.warning({
+              message: 'This product is already in your cart!',
+              duration: DURATION_NOTIFICATION,
+            })
+        : () =>
+            api.success({
+              message: 'Add to the cart successfully!',
+              duration: DURATION_NOTIFICATION,
+            }))();
 
-        return map(prev, (cartItem) =>
-          cartItem.id === product.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      } else {
-        api.success({
-          message: "Add to the cart successfully!",
-          duration: DURATION_NOTIFICATION,
-        });
-
-        return [...prev, { ...product, quantity: 1 }];
-      }
+      return found
+        ? map(prev, cartItem =>
+            cartItem.id === product.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
+          )
+        : [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const handleToggleWishList = (product) => {
-    setWishList((prev) =>
-      find(prev, (wishItem) => wishItem.id === product.id)
-        ? filter(prev, (wishItem) => wishItem.id !== product.id)
-        : [...prev, product]
+  const handleToggleWishList = product => {
+    setWishList(prev =>
+      find(prev, wishItem => wishItem.id === product.id)
+        ? filter(prev, wishItem => wishItem.id !== product.id)
+        : [...prev, product],
     );
   };
 
-  const isWishedProduct = (product) =>
-    some(wishList, (wishItem) => wishItem.id === product?.id);
+  const isWishedProduct = product => some(wishList, wishItem => wishItem.id === product?.id);
 
-  const handleRemoveWishItem = (currentId) =>
-    setWishList((prev) =>
-      filter(prev, (wishItem) => wishItem.id !== currentId)
-    );
+  const handleRemoveWishItem = currentId => setWishList(prev => filter(prev, wishItem => wishItem.id !== currentId));
 
-  const handleRemoveCartItem = (currentId) =>
-    setCartItems((prev) => filter(prev, (item) => item.id !== currentId));
+  const handleRemoveCartItem = currentId => setCartItems(prev => filter(prev, item => item.id !== currentId));
+
+  const handleDeleteAllCartItems = () => {
+    setCartItems([]);
+
+    isEmpty(cartItems)
+      ? api.warning({
+          message: 'There are no items to delete!',
+          duration: DURATION_NOTIFICATION,
+        })
+      : api.success({
+          message: 'Delete all items successfully!',
+          duration: DURATION_NOTIFICATION,
+        });
+  };
 
   const handleUpdateQuantity = (currentId, quantityIncrement) =>
-    setCartItems((prev) =>
-      map(prev, (item) =>
+    setCartItems(prev =>
+      map(prev, item =>
         item.id === currentId
           ? {
               ...item,
               quantity: Math.max(1, item.quantity + quantityIncrement),
             }
-          : item
-      )
+          : item,
+      ),
     );
 
   useEffect(() => {
-    setLocalStorage(CART_ITEMS, cartItems);
-    setLocalStorage(WISH_LIST, wishList);
+    setLocalStorage(CART_ITEMS_KEY, cartItems);
+    setLocalStorage(WISH_LIST_KEY, wishList);
   }, [cartItems, wishList]);
 
   return (
@@ -194,10 +187,7 @@ export const HomePage = () => {
         <TopBar>
           <SortButton>
             Newest
-            <FontAwesomeIcon
-              icon={faChevronRight}
-              style={{ width: "1rem", height: "1rem" }}
-            />
+            <FontAwesomeIcon icon={faChevronRight} style={{ width: '1rem', height: '1rem' }} />
           </SortButton>
         </TopBar>
 
@@ -216,10 +206,7 @@ export const HomePage = () => {
           />
 
           <ProductSection>
-            <ProductGrid
-              filteredProducts={filteredProducts}
-              onOpenProductDetailModal={setProductDetail}
-            />
+            <ProductGrid filteredProducts={filteredProducts} onOpenProductDetailModal={setProductDetail} />
           </ProductSection>
         </Content>
       </Main>
@@ -241,6 +228,7 @@ export const HomePage = () => {
         onOpenProductDetailModal={setProductDetail}
         onRemoveCartItem={handleRemoveCartItem}
         onUpdateQuantity={handleUpdateQuantity}
+        onDeleteAllCartItems={handleDeleteAllCartItems}
       />
 
       <WishListModal

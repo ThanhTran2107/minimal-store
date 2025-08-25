@@ -1,14 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons";
-import {
-  faStar as faStarRegular,
-  faStarHalfAlt,
-} from "@fortawesome/free-regular-svg-icons";
+import { faStarHalfAlt, faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { map } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import styled from "styled-components";
-import { COLORS } from "../../utilities/constant";
-import { map } from "lodash";
-import PropTypes from "prop-types";
+import { COLORS } from '../../utilities/constant';
 
 const RatingWrapper = styled.div`
   display: flex;
@@ -30,13 +27,7 @@ export const Rating = ({ value }) => {
       {map(Array.from({ length: 5 }), (_, i) => (
         <FontAwesomeIcon
           key={i}
-          icon={
-            i < full
-              ? faStarSolid
-              : half && i === full
-              ? faStarHalfAlt
-              : faStarRegular
-          }
+          icon={i < full ? faStarSolid : half && i === full ? faStarHalfAlt : faStarRegular}
           style={{ color: COLORS.ORANGE_YELLOW }}
         />
       ))}

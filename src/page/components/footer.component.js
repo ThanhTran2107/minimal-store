@@ -1,5 +1,6 @@
-import styled from "styled-components";
-import { COLORS } from "../../utilities/constant";
+import styled from 'styled-components';
+
+import { COLORS } from '../../utilities/constant';
 
 const FooterWrapper = styled.footer`
   margin-top: 3rem;
@@ -18,9 +19,7 @@ const FooterContent = styled.div`
 export const Footer = () => {
   return (
     <FooterWrapper>
-      <FooterContent>
-        © {new Date().getFullYear()} Minimal Store. Built by Thanh Tran
-      </FooterContent>
+      <FooterContent>© {new Date().getFullYear()} Minimal Store. Built by Thanh Tran</FooterContent>
     </FooterWrapper>
   );
 };

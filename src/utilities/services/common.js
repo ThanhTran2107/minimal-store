@@ -1,10 +1,9 @@
 // LOCAL STORAGE
 
-export const setLocalStorage = (key, value) =>
-  window.localStorage.setItem(key, JSON.stringify(value));
+export const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value));
 
 export const getLocalStorage = (key, defaultValue = undefined) => {
-  let parsedValue = "";
+  let parsedValue = '';
 
   try {
     const value = localStorage.getItem(key);
@@ -21,11 +20,10 @@ export const getLocalStorage = (key, defaultValue = undefined) => {
 
 // SESSION STORAGE
 
-export const setSessionStorage = (key, value) =>
-  window.localStorage.setItem(key, JSON.stringify(value));
+export const setSessionStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value));
 
 export const getSessionStorage = (key, defaultValue = undefined) => {
-  let parsedValue = "";
+  let parsedValue = '';
 
   try {
     const value = localStorage.getItem(key);

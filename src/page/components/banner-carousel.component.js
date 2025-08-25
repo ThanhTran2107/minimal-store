@@ -1,6 +1,7 @@
-import styled from "styled-components";
-import { Carousel } from "../../components/carousel.component";
-import { CAROUSEL_SPEED, COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
+import styled from 'styled-components';
+
+import { Carousel } from '../../components/carousel.component';
+import { CAROUSEL_SPEED, COLORS, VIETNAMESE_CURRENCY } from '../../utilities/constant';
 
 const CarouselContent = styled.h3`
   width: 100%;
@@ -27,45 +28,31 @@ export const BannerCarousel = () => {
   return (
     <CarouselStyled autoplay autoplaySpeed={CAROUSEL_SPEED}>
       <div>
-        <CarouselContent>
-          🎉 Get 50% OFF your first order, "SALE50" – Shop now!
-        </CarouselContent>
+        <CarouselContent>🎉 Get 50% OFF your first order, "SALE50" – Shop now!</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          🛒 New arrivals – Fall 2025 collection, limited stock!
-        </CarouselContent>
+        <CarouselContent>🛒 New arrivals – Fall 2025 collection, limited stock!</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          🚚 Free nationwide shipping on orders over 7.000.000 {VIETNAMESE_CURRENCY}
-        </CarouselContent>
+        <CarouselContent>🚚 Free nationwide shipping on orders over 7.000.000 {VIETNAMESE_CURRENCY}</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          ⭐ Exclusive daily dealS – Don’t miss out!
-        </CarouselContent>
+        <CarouselContent>⭐ Exclusive daily dealS – Don’t miss out!</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          🎁 Sign up today & receive a welcome gift voucher!
-        </CarouselContent>
+        <CarouselContent>🎁 Sign up today & receive a welcome gift voucher!</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          🔥 Flash Sale – Up to 70% OFF this weekend only!
-        </CarouselContent>
+        <CarouselContent>🔥 Flash Sale – Up to 70% OFF this weekend only!</CarouselContent>
       </div>
 
       <div>
-        <CarouselContent>
-          🌿 Eco-friendly packaging for all orders 🌍
-        </CarouselContent>
+        <CarouselContent>🌿 Eco-friendly packaging for all orders 🌍</CarouselContent>
       </div>
     </CarouselStyled>
   );

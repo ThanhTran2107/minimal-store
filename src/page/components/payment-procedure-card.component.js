@@ -1,20 +1,17 @@
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "../../components/button.component";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import { WishListButton } from "./wish-list-button.component";
-import { isEmpty, map } from "lodash";
-import {
-  COLORS,
-  DURATION_NOTIFICATION,
-  VIETNAMESE_CURRENCY,
-} from "../../utilities/constant";
-import PropTypes from "prop-types";
-import { Divider } from "../../components/divider.component";
-import { Input } from "../../components/input.component";
-import { AddressSelector } from "./andress-selector.component";
-import { notification } from "../../components/notification.component";
+import { faMinus, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { isEmpty, map } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { Button } from '../../components/button.component';
+import { Divider } from '../../components/divider.component';
+import { Input } from '../../components/input.component';
+import { notification } from '../../components/notification.component';
+import { COLORS, DURATION_NOTIFICATION, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
+import { AddressSelector } from './andress-selector.component';
+import { WishListButton } from './wish-list-button.component';
 
 const PaymentProcedureWrapper = styled.div`
   display: flex;
@@ -67,7 +64,9 @@ const ItemImage = styled.img`
   height: 4rem;
   border-radius: 0.5rem;
   object-fit: cover;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
 
   &:hover {
     transform: scale(1.1);
@@ -92,6 +91,8 @@ const ItemPrice = styled.div`
 `;
 
 const SubtotalWrapper = styled.div`
+  display: flex;
+  gap: 1rem;
   border-top: 1px solid ${COLORS.LIGHT_GRAY};
   padding-top: 0.75rem;
   margin-top: 1rem;
@@ -104,7 +105,7 @@ const CheckoutButton = styled.button`
   border: none;
   border-radius: 0.5rem;
   background-color: ${COLORS.ORANGE_YELLOW};
-  color: white;
+  color: ${COLORS.WHITE};
   padding: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
@@ -117,22 +118,11 @@ const CheckoutButton = styled.button`
 `;
 
 const ReturnToCartButton = styled(CheckoutButton)`
-  margin-top: 0.75rem;
-  width: 100%;
-  height: 3rem;
-  border: none;
-  border-radius: 0.5rem;
-  color: white;
   background-color: ${COLORS.BRIGHT_BLUE};
-  padding: 0.5rem;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+`;
 
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px ${COLORS.BLACK_10};
-  }
+const DeleteAllButton = styled(CheckoutButton)`
+  background-color: ${COLORS.RED};
 `;
 
 const RemoveItemButton = styled(Button)`
@@ -170,6 +160,7 @@ export const PaymentProcedureCard = ({
   onUpdateQuantity,
   onContinueCheckout,
   onBackToCart,
+  onDeleteAllCartItems,
 }) => {
   const [api, contextHolder] = notification.useNotification();
 
@@ -182,13 +173,9 @@ export const PaymentProcedureCard = ({
           <ItemsWrapper>
             {isEmpty(cartItems) && <EmptyText>Cart is empty.</EmptyText>}
 
-            {map(cartItems, (item) => (
+            {map(cartItems, item => (
               <CartItem key={item.id}>
-                <ItemImage
-                  src={item.image}
-                  alt={item.title}
-                  onClick={() => onOpenProductDetailModal(item)}
-                />
+                <ItemImage src={item.image} alt={item.title} onClick={() => onOpenProductDetailModal(item)} />
 
                 <ItemInfo>
                   <ItemTitle>{item.title}</ItemTitle>
@@ -228,11 +215,13 @@ export const PaymentProcedureCard = ({
           </ItemsWrapper>
 
           <SubtotalWrapper>
+            <DeleteAllButton onClick={onDeleteAllCartItems}>Delete All</DeleteAllButton>
+
             <CheckoutButton
               onClick={() => {
                 if (isEmpty(cartItems)) {
                   api.warning({
-                    message: "Your cart is empty to check out!",
+                    message: 'Your cart is empty to check out!',
                     duration: DURATION_NOTIFICATION,
                   });
 
@@ -271,7 +260,7 @@ export const PaymentProcedureCard = ({
 
           <Divider />
 
-          <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ display: 'flex', gap: '1rem' }}>
             <ReturnToCartButton
               onClick={() => {
                 onBackToCart();
@@ -296,7 +285,7 @@ PaymentProcedureCard.propTypes = {
       title: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       image: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   isWishedProduct: PropTypes.func.isRequired,
   onToggleWishList: PropTypes.func.isRequired,
@@ -305,4 +294,5 @@ PaymentProcedureCard.propTypes = {
   onUpdateQuantity: PropTypes.func.isRequired,
   onContinueCheckout: PropTypes.func.isRequired,
   onBackToCart: PropTypes.func.isRequired,
+  onDeleteAllCartItems: PropTypes.func.isRequired,
 };

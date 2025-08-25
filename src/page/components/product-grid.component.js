@@ -1,8 +1,9 @@
-import { isEmpty, map } from "lodash";
-import { COLORS } from "../../utilities/constant";
-import { ProductCard } from "./product-card.component";
-import styled from "styled-components";
-import PropTypes from "prop-types";
+import { isEmpty, map } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { COLORS } from '../../utilities/constant';
+import { ProductCard } from './product-card.component';
 
 const GridWrapper = styled.div`
   display: grid;
@@ -27,12 +28,8 @@ export const ProductGrid = ({ filteredProducts, onOpenProductDetailModal }) => {
     <EmptyMessage>No products found.</EmptyMessage>
   ) : (
     <GridWrapper>
-      {map(filteredProducts, (product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onOpenProductDetailModal={onOpenProductDetailModal}
-        />
+      {map(filteredProducts, product => (
+        <ProductCard key={product.id} product={product} onOpenProductDetailModal={onOpenProductDetailModal} />
       ))}
     </GridWrapper>
   );

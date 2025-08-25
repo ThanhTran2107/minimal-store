@@ -1,9 +1,9 @@
-import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
 
-if (typeof process !== "undefined" && process?.release?.name === "node") {
-  const dotenv = await import("dotenv");
-  
+if (typeof process !== 'undefined' && process?.release?.name === 'node') {
+  const dotenv = await import('dotenv');
+
   dotenv.config();
 }
 

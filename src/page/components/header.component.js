@@ -1,16 +1,12 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartShopping,
-  faSearch,
-  faHeart,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { Dropdown } from "../../components/dropdown.component";
-import { LoginModal } from "./login-modal.component";
-import styled from "styled-components";
-import { useState } from "react";
-import { COLORS } from "../../utilities/constant";
-import PropTypes from "prop-types";
+import { faCartShopping, faHeart, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import styled from 'styled-components';
+
+import { Dropdown } from '../../components/dropdown.component';
+import { COLORS } from '../../utilities/constant';
+import { LoginModal } from './login-modal.component';
 
 const HeaderWrapper = styled.header`
   position: sticky;
@@ -93,13 +89,13 @@ const CartCountBadge = styled.span`
   position: absolute;
   top: -0.25rem;
   right: -0.25rem;
-  width: 1.1rem; /* kích thước vòng tròn */
+  width: 1.1rem;
   height: 1.1rem;
   background-color: ${COLORS.RED};
   color: ${COLORS.WHITE};
-  font-size: 0.65rem; /* chữ nhỏ hơn */
+  font-size: 0.65rem;
   font-weight: 1000;
-  border-radius: 50%; /* đảm bảo tròn */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,24 +122,17 @@ const RightSection = styled.div`
 
 const WishCountBadge = styled(CartCountBadge)``;
 
-export const Header = ({
-  searchText,
-  cartCount,
-  wishCount,
-  onOpenCart,
-  onOpenWishlist,
-  setSearchText,
-}) => {
+export const Header = ({ searchText, cartCount, wishCount, onOpenCart, onOpenWishlist, setSearchText }) => {
   const [hasOpenLoginModal, setHasOpenLoginModal] = useState(false);
 
   //Dropdown items
   const items = [
     {
-      key: "logIn",
-      label: "Log In",
+      key: 'logIn',
+      label: 'Log In',
       onClick: () => setHasOpenLoginModal(true),
     },
-    { key: "signUp", label: "Sign Up" },
+    { key: 'signUp', label: 'Sign Up' },
   ];
 
   return (
@@ -159,45 +148,39 @@ export const Header = ({
             <FontAwesomeIcon
               icon={faSearch}
               style={{
-                position: "absolute",
-                left: "0.75rem",
-                top: "50%",
-                transform: "translateY(-50%)",
+                position: 'absolute',
+                left: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
                 color: COLORS.SLATE_GRAY,
-                fontSize: "1rem",
+                fontSize: '1rem',
               }}
             />
             <SearchInput
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={e => setSearchText(e.target.value)}
               placeholder="Search products"
             />
           </SearchWrapper>
 
           <IconButton onClick={onOpenWishlist} aria-label="Open wishlist">
-            <FontAwesomeIcon icon={faHeart} style={{ fontSize: "1.25rem" }} />
+            <FontAwesomeIcon icon={faHeart} style={{ fontSize: '1.25rem' }} />
             {wishCount > 0 && <WishCountBadge>{wishCount}</WishCountBadge>}
           </IconButton>
 
           <IconButton onClick={onOpenCart} aria-label="Open cart">
-            <FontAwesomeIcon
-              icon={faCartShopping}
-              style={{ fontSize: "1.25rem" }}
-            />
+            <FontAwesomeIcon icon={faCartShopping} style={{ fontSize: '1.25rem' }} />
             {cartCount > 0 && <CartCountBadge>{cartCount}</CartCountBadge>}
           </IconButton>
 
-          <Dropdown menu={{ items }} trigger={["click"]}>
+          <Dropdown menu={{ items }} trigger={['click']}>
             <IconButton>
-              <FontAwesomeIcon icon={faUser} style={{ fontSize: "1.25rem" }} />
+              <FontAwesomeIcon icon={faUser} style={{ fontSize: '1.25rem' }} />
             </IconButton>
           </Dropdown>
         </RightSection>
 
-        <LoginModal
-          hasOpenLoginModal={hasOpenLoginModal}
-          onCloseLoginModal={() => setHasOpenLoginModal(false)}
-        />
+        <LoginModal hasOpenLoginModal={hasOpenLoginModal} onCloseLoginModal={() => setHasOpenLoginModal(false)} />
       </HeaderContent>
     </HeaderWrapper>
   );

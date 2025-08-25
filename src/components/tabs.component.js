@@ -1,3 +1,3 @@
-import { Tabs } from "antd";
+import { Tabs } from 'antd';
 
 export { Tabs };

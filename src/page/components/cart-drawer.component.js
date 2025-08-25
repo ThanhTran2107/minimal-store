@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import styled from "styled-components";
-import { reduce } from "lodash";
-import { COLORS } from "../../utilities/constant";
-import { Modal } from "../../components/modal.component";
-import PropTypes from "prop-types";
-import { OrderSummaryCard } from "./order-summary-card.component";
-import { PaymentProcedureCard } from "./payment-procedure-card.component";
+import { reduce } from 'lodash';
+import PropTypes from 'prop-types';
+import { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
+
+import { Modal } from '../../components/modal.component';
+import { COLORS } from '../../utilities/constant';
+import { OrderSummaryCard } from './order-summary-card.component';
+import { PaymentProcedureCard } from './payment-procedure-card.component';
 
 const CartModal = styled(Modal)`
   margin-top: -3rem;
@@ -34,18 +35,14 @@ export const CartDrawer = ({
   onOpenProductDetailModal,
   onRemoveCartItem,
   onUpdateQuantity,
+  onDeleteAllCartItems,
 }) => {
   const [isCheckout, setIsCheckout] = useState(false);
   const [hasShowShippingForm, setHasShowShippingForm] = useState(false);
 
   const priceTotal = useMemo(
-    () =>
-      reduce(
-        cartItems,
-        (initValue, item) => initValue + item.price * item.quantity,
-        0
-      ),
-    [cartItems]
+    () => reduce(cartItems, (initValue, item) => initValue + item.price * item.quantity, 0),
+    [cartItems],
   );
 
   useEffect(() => {
@@ -78,13 +75,10 @@ export const CartDrawer = ({
           onOpenProductDetailModal={onOpenProductDetailModal}
           onRemoveCartItem={onRemoveCartItem}
           onUpdateQuantity={onUpdateQuantity}
+          onDeleteAllCartItems={onDeleteAllCartItems}
         />
 
-        <OrderSummaryCard
-          cartItems={cartItems}
-          totalPrice={priceTotal}
-          isCheckout={isCheckout}
-        />
+        <OrderSummaryCard cartItems={cartItems} totalPrice={priceTotal} isCheckout={isCheckout} />
       </CartWrapper>
     </CartModal>
   );
@@ -97,7 +91,7 @@ CartDrawer.propTypes = {
       title: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       image: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   hasOpenCartDrawer: PropTypes.bool,
   isWishedProduct: PropTypes.func.isRequired,
@@ -106,4 +100,5 @@ CartDrawer.propTypes = {
   onOpenProductDetailModal: PropTypes.func.isRequired,
   onRemoveCartItem: PropTypes.func.isRequired,
   onUpdateQuantity: PropTypes.func.isRequired,
+  onDeleteAllCartItems: PropTypes.func.isRequired,
 };

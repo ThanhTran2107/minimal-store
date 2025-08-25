@@ -1,10 +1,11 @@
-import styled from "styled-components";
-import { COLORS, VIETNAMESE_CURRENCY } from "../../utilities/constant";
-import { Space } from "../../components/space.component";
-import { map } from "lodash";
-import { FILTER_PRODUCT_PRICES } from "../../utilities/constant";
-import { FormatVietnameseCurrency } from "../../utilities/services/formatVietnameseCurrency";
-import PropTypes from "prop-types";
+import { map } from 'lodash';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import { Space } from '../../components/space.component';
+import { COLORS, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { FILTER_PRODUCT_PRICES } from '../../utilities/constant';
+import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
 
 const FilterTitle = styled.div`
   font-size: 0.75rem;
@@ -21,11 +22,11 @@ const Title = styled.h1`
 
 const FilterButton = styled.button`
   border-radius: 9999px;
-  border: 1px solid
-    ${({ active }) => (active ? COLORS.MEDIUM_GRAY : COLORS.VERY_LIGHT_GRAY)};
+  border: 1px solid ${({ active }) => (active ? COLORS.MEDIUM_GRAY : COLORS.VERY_LIGHT_GRAY)};
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   color: ${({ active }) => (active ? COLORS.CHARCOAL_BLUE : COLORS.SLATE_GRAY)};
+  background-color: ${({ active }) => (active ? COLORS.SOFT_YELLOW : COLORS.WHITE)};
   margin-bottom: 0.5rem;
   transition: all 0.3s ease;
 
@@ -73,12 +74,15 @@ export const FilterContent = ({
 
         <FilterTitle>Category</FilterTitle>
 
-        <Space style={{ display: "flex", flexWrap: "wrap" }}>
-          {map(categories, (item) => (
+        <Space style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {map(categories, item => (
             <FilterButton
               key={item}
               active={categoryName === item}
-              onClick={() => setCategoryName(item)}
+              onClick={() => {
+                setCategoryName(item);
+                console.log(categoryName);
+              }}
             >
               {item}
             </FilterButton>
@@ -89,13 +93,9 @@ export const FilterContent = ({
       <Space direction="vertical" size="small">
         <FilterTitle>Brand</FilterTitle>
 
-        <Space style={{ display: "flex", flexWrap: "wrap" }}>
-          {map(brands, (item) => (
-            <FilterButton
-              key={item}
-              active={brandName === item}
-              onClick={() => setBrandName(item)}
-            >
+        <Space style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {map(brands, item => (
+            <FilterButton key={item} active={brandName === item} onClick={() => setBrandName(item)}>
               {item}
             </FilterButton>
           ))}
@@ -110,7 +110,7 @@ export const FilterContent = ({
           min={MIN}
           max={MAX}
           value={filterPrice}
-          onChange={(e) => setFilterPrice(Number(e.target.value))}
+          onChange={e => setFilterPrice(Number(e.target.value))}
         />
 
         <RangeValue>
