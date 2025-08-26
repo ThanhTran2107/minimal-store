@@ -13,7 +13,7 @@ import { Space } from '../../components/space.component';
 import { Typography } from '../../components/typography.component';
 import {
   COLORS,
-  DURATION_NOTIFICATION,
+  CUSTOM_NOTIFICATION,
   PROMOCODE,
   SHIPPING_FEE,
   SHIPPING_FEE_FREE,
@@ -74,11 +74,11 @@ export const OrderSummaryCard = ({ cartItems, totalPrice, isCheckout }) => {
       ? api.warning({
           message: 'Invalid or non-existent promo code!',
           description: totalPrice === 0 && 'Cannot apply promo code on an empty cart!',
-          duration: DURATION_NOTIFICATION,
+          ...CUSTOM_NOTIFICATION,
         }) && false
       : api.success({
           message: 'Promo code applied successfully!',
-          duration: DURATION_NOTIFICATION,
+          ...CUSTOM_NOTIFICATION,
         }) && true;
   };
 

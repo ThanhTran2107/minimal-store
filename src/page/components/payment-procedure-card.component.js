@@ -8,7 +8,7 @@ import { Button } from '../../components/button.component';
 import { Divider } from '../../components/divider.component';
 import { Input } from '../../components/input.component';
 import { notification } from '../../components/notification.component';
-import { COLORS, DURATION_NOTIFICATION, VIETNAMESE_CURRENCY } from '../../utilities/constant';
+import { COLORS, CUSTOM_NOTIFICATION, VIETNAMESE_CURRENCY } from '../../utilities/constant';
 import { FormatVietnameseCurrency } from '../../utilities/services/formatVietnameseCurrency';
 import { AddressSelector } from './andress-selector.component';
 import { WishListButton } from './wish-list-button.component';
@@ -135,7 +135,6 @@ const RemoveItemButton = styled(Button)`
 `;
 
 const ShippingInfoCard = styled.div`
-  margin-top: 1rem;
   border: 1px solid ${COLORS.LIGHT_GRAY};
   border-radius: 0.5rem;
   padding: 1rem;
@@ -222,7 +221,7 @@ export const PaymentProcedureCard = ({
                 if (isEmpty(cartItems)) {
                   api.warning({
                     message: 'Your cart is empty to check out!',
-                    duration: DURATION_NOTIFICATION,
+                    ...CUSTOM_NOTIFICATION,
                   });
 
                   return;

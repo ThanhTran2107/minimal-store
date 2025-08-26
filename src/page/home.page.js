@@ -11,7 +11,7 @@ import { Footer } from '../page/components/footer.component';
 import { Header } from '../page/components/header.component.js';
 import { ProductDetailModal } from '../page/components/product-detail-modal.component';
 import { ProductGrid } from '../page/components/product-grid.component';
-import { DURATION_NOTIFICATION, FILTER_PRODUCT_PRICES, LOCAL_STORAGE_KEYS } from '../utilities/constant';
+import { CUSTOM_NOTIFICATION, FILTER_PRODUCT_PRICES, LOCAL_STORAGE_KEYS } from '../utilities/constant';
 import { COLORS } from '../utilities/constant.js';
 import { useGetBrands } from '../utilities/data-hooks/use-get-brands.hook.js';
 import { useGetCategories } from '../utilities/data-hooks/use-get-categories.hook.js';
@@ -107,12 +107,12 @@ export const HomePage = () => {
         ? () =>
             api.warning({
               message: 'This product is already in your cart!',
-              duration: DURATION_NOTIFICATION,
+              ...CUSTOM_NOTIFICATION,
             })
         : () =>
             api.success({
               message: 'Add to the cart successfully!',
-              duration: DURATION_NOTIFICATION,
+              ...CUSTOM_NOTIFICATION,
             }))();
 
       return found
@@ -143,11 +143,11 @@ export const HomePage = () => {
     isEmpty(cartItems)
       ? api.warning({
           message: 'There are no items to delete!',
-          duration: DURATION_NOTIFICATION,
+          ...CUSTOM_NOTIFICATION,
         })
       : api.success({
           message: 'Delete all items successfully!',
-          duration: DURATION_NOTIFICATION,
+          ...CUSTOM_NOTIFICATION,
         });
   };
 

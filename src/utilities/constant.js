@@ -12,10 +12,15 @@ export const GET_BRANDS_API = `${process.env.REACT_APP_FIREBASE_DATABASE_URL}bra
 export const VIETNAMESE_CURRENCY = '₫';
 export const PROMOCODE = 'SALE50';
 
-export const DURATION_NOTIFICATION = 1;
 export const SHIPPING_FEE = 45000;
 export const SHIPPING_FEE_FREE = 7000000;
 export const CAROUSEL_SPEED = 1500;
+
+export const CUSTOM_NOTIFICATION = Object.freeze({
+  pauseOnHover: false,
+  duration: 1,
+  closeIcon: false,
+});
 
 export const FILTER_PRODUCT_PRICES = Object.freeze({
   MIN: 0,
